@@ -1,6 +1,9 @@
 # C++ Tensor Library
 Tensor library is inspired by numpy and is implemented with similar API.
 
+## Example
+see @main.cpp for example usages.
+
 ## Workflow
 
 
