@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <map>
 #include <limits>
+#include <iomanip>
+
 #include <libu/u-log>
 
 #include "../u-shape.hpp"
@@ -39,11 +41,20 @@ namespace u {
                 class Equal {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(src1[i] == static_cast<T1>(src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src1[i] == static_cast<T1>(src2[i]));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src2[i] == static_cast<T2>(src1[i]));
+                            }
                         }
                     }
                 };
@@ -52,11 +63,20 @@ namespace u {
                 class NotEqual {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(src1[i] != static_cast<T1>(src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src1[i] != static_cast<T1>(src2[i]));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src2[i] != static_cast<T2>(src1[i]));
+                            }
                         }
                     }
                 };
@@ -65,11 +85,20 @@ namespace u {
                 class Greater {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(src1[i] > static_cast<T1>(src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src1[i] > static_cast<T1>(src2[i]));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(static_cast<T2>(src1[i]) > src2[i]);
+                            }
                         }
                     }
                 };
@@ -78,11 +107,20 @@ namespace u {
                 class GreaterEqual {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(src1[i] >= static_cast<T1>(src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src1[i] >= static_cast<T1>(src2[i]));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(static_cast<T2>(src1[i]) >= src2[i]);
+                            }
                         }
                     }
                 };
@@ -91,11 +129,20 @@ namespace u {
                 class Less {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(src1[i] < static_cast<T1>(src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src1[i] < static_cast<T1>(src2[i]));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(static_cast<T2>(src1[i]) < src2[i]);
+                            }
                         }
                     }
                 };
@@ -104,11 +151,20 @@ namespace u {
                 class LessEqual {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(src1[i] <= static_cast<T1>(src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src1[i] <= static_cast<T1>(src2[i]));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(static_cast<T2>(src1[i]) <= src2[i]);
+                            }
                         }
                     }
                 };
@@ -117,11 +173,20 @@ namespace u {
                 class Add {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(static_cast<To>(src1[i]) + static_cast<To>(src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src1[i] + static_cast<T1>(src2[i]));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(static_cast<T2>(src1[i]) + src2[i]);
+                            }
                         }
                     }
                 };
@@ -130,11 +195,20 @@ namespace u {
                 class Subtract {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(static_cast<To>(src1[i]) - static_cast<To>(src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src1[i] - static_cast<T1>(src2[i]));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(static_cast<T2>(src1[i]) - src2[i]);
+                            }
                         }
                     }
                 };
@@ -143,11 +217,20 @@ namespace u {
                 class Multiply {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(static_cast<To>(src1[i]) * static_cast<To>(src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src1[i] * static_cast<T1>(src2[i]));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src2[i] * static_cast<T2>(src1[i]));
+                            }
                         }
                     }
                 };
@@ -156,11 +239,20 @@ namespace u {
                 class Divide {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(static_cast<To>(src1[i]) / static_cast<To>(src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src1[i] / static_cast<T1>(src2[i]));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(static_cast<T2>(src1[i]) / src2[i]);
+                            }
                         }
                     }
                 };
@@ -169,11 +261,20 @@ namespace u {
                 class Mod {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(static_cast<To>(src1[i]) % static_cast<To>(src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src1[i] % static_cast<T1>(src2[i]));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(src2[i] % static_cast<T2>(src1[i]));
+                            }
                         }
                     }
                 };
@@ -182,11 +283,64 @@ namespace u {
                 class Pow {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
-                        #ifdef _OPENMP
-                        #pragma omp parallel for
-                        #endif
-                        for (size_t i=0; i<size; ++i) {
-                            dst[i] = static_cast<To>(std::pow(src1[i], src2[i]));
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(std::pow(src1[i], static_cast<T1>(src2[i])));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(std::pow(src2[i], static_cast<T2>(src1[i])));
+                            }
+                        }
+                    }
+                };
+
+                template<typename To, typename T1, typename T2>
+                class Maximum {
+                public:
+                    static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(std::max(src1[i], static_cast<T1>(src2[i])));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(std::max(src2[i], static_cast<T2>(src1[i])));
+                            }
+                        }
+                    }
+                };
+
+                template<typename To, typename T1, typename T2>
+                class Minimum {
+                public:
+                    static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(std::min(src1[i], static_cast<T1>(src2[i])));
+                            }
+                        } else {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t i=0; i<size; ++i) {
+                                dst[i] = static_cast<To>(std::min(src2[i], static_cast<T2>(src1[i])));
+                            }
                         }
                     }
                 };
@@ -441,7 +595,7 @@ namespace u {
                         }
                     }
 
-                    for (size_t i=0; i<end_axis; ++i) {
+                    for (size_t i=0; i<static_cast<size_t>(end_axis); ++i) {
                 		size_t times = dshape.volume(0, i);
                 		size_t dstrides = 1;
                 		size_t sstrides = 1;
@@ -449,7 +603,7 @@ namespace u {
                         if (i+1 < dshape.rank()) {
                             dstrides = dshape.volume(i+1, -1);
                             sstrides = sshape.volume(i+1, -1);
-                            if (i+1 <= end_axis) {
+                            if (i+1 <= static_cast<size_t>(end_axis)) {
                                 repeats = dshape.volume(i+1, end_axis) / sshape.volume(i+1, end_axis);
                             }
                         }
@@ -601,6 +755,20 @@ namespace u {
                 inline void pow(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
                     u_fun_enter(0, 0);
                     binary_op_run<aop::Pow, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+                    u_fun_exit(0, 0);
+                }
+
+                template<typename To, typename T1, typename T2>
+                inline void max(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+                    u_fun_enter(0, 0);
+                    binary_op_run<aop::Maximum, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+                    u_fun_exit(0, 0);
+                }
+
+                template<typename To, typename T1, typename T2>
+                inline void min(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+                    u_fun_enter(0, 0);
+                    binary_op_run<aop::Minimum, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
                     u_fun_exit(0, 0);
                 }
 
