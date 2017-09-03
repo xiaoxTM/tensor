@@ -62,3 +62,4 @@ add (function) --> u::op::Add (class) --> u::op::cpu::add (function) --> u::aop:
 - [ ] BLAS introduction
 - [ ] GPU `CUDA` implementation
 - [ ] Indexing
+- [ ] GMP for arbitrary precision
