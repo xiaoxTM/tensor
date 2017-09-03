@@ -151,13 +151,13 @@ namespace u {
             class Print {
             public:
                 // print elements between [begin, end)
-                static void run(const unsigned char *dst, const Shape &shape, size_t begin, size_t end, std::ostream &os) {
+                static void run(const unsigned char *dst, const Shape &shape, size_t begin, size_t end, std::ostream &os, int precision) {
                     if (shape.rank() == 0) {
                         if (dst != nullptr) {
                             const T * const data_ = reinterpret_cast<const T* const >(dst);
-                            os << *data_ << std::flush;
+                            os << std::setprecision(precision) << *data_ << std::flush;
                         } else {
-                            os << "null" << std::flush;
+                            os << std::setprecision(precision) << "null" << std::flush;
                         }
                     } else {
                         u_assert(begin < end, u::format("`begin` must be less than `end` (%zu vs %zu)", begin, end));
@@ -165,14 +165,14 @@ namespace u {
                         if (dst != nullptr) {
                             const T * const data_ = reinterpret_cast<const T* const >(dst);
                             for (size_t i = begin; i < end; ++i) {
-                                os << data_[i] << std::flush;
+                                os << std::setprecision(precision) << data_[i] << std::flush;
                                 if (i != end - 1) {
                                     os << " , ";
                                 }
                             }
                         } else {
                             for (size_t i = begin; i < end; ++i) {
-                                os << "null" << std::flush;
+                                os << std::setprecision(precision) << "null" << std::flush;
                                 if (i != end - 1) {
                                     os << " , ";
                                 }
@@ -183,243 +183,6 @@ namespace u {
             };
 
             #ifdef USE_CUDA
-
-            template<typename To, typename Ti>
-            class Broadcast {
-            public:
-                static void run(unsigned char *dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    gpu::broadcast<To, Ti>(dst, src, dshape, sshape);
-                }
-            };
-
-            template<typename To, typename T1, typename T2>
-            class Equal {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    gpu::equal<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                }
-            };
-
-            template<typename To, typename T1, typename T2>
-            class Add {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    gpu::add<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                }
-            };
-
-            template<typename To, typename T1, typename T2>
-            class Subtract {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    gpu::subtract<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                }
-            };
-
-            template<typename To, typename T1, typename T2>
-            class Multiply {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    gpu::multiply<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                }
-            };
-
-            template<typename To, typename T1, typename T2>
-            class Divide {
-            public:
-                static To run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    gpu::divide<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                }
-            };
-
-            template<typename To, typename T1, typename T2>
-            class Mod {
-            public:
-                static To run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    gpu::mod<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                }
-            };
-
-            template<typename To, typename T1, typename T2>
-            class Pow {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    gpu::pow<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                }
-            };
-
-            // natural logarithm
-            template<typename To, typename Ti>
-            class Log {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
-                    gpu::log<To, Ti>(dst, src, dshape, sshape);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Log10 {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
-                    gpu::log10<To, Ti>(dst, src, dshape, sshape);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Experiential  {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
-                    gpu::exp<To, Ti>(dst, src, dshape, sshape);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Invert {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
-                    cpu::invert<To, Ti>(dst, src, dshape, sshape);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Minus {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
-                    gpu::minus<To, Ti>(dst, src, dshape, sshape);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Absolute {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
-                    gpu::abs<To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Clip {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, double min, double max) {
-                    u_fun_enter(0, 0);
-                    gpu::clip<To, Ti>(dst, src, dshape, sshape, min, max);
-                    u_fun_exit(0, 0);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Assign {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
-                    gpu::assign<To, Ti>(dst, src, dshape, sshape);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Sum {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
-                    gpu::sum<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Mean {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
-                    gpu::mean<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class StdDev {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
-                    gpu::stddev<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Max {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
-                    gpu::max<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Min {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
-                    gpu::min<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class ArgMax {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
-                    gpu::argmax<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class ArgMin {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
-                    gpu::argmin<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
-                }
-            };
-
-            template<typename To, typename Ti>
-            class Transpose {
-            public:
-                static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, const std::vector<size_t> &dims, const std::map<size_t, size_t> &dim_map) {
-                    u_fun_enter(0, 0);
-                    u_assert(dst != nullptr && src != nullptr,"both dst and src must not be null pointer");
-                    u_assert(dst != src, "transpose cannot be called with in-place mode");
-                    u_assert(dim_map.size() == dshape.size(),u::format("transpose changes size not match (%zu, vs %zu)",dim_map.size(), dshape.size()));
-                    u_assert(dshape.rank() == sshape.rank() && dshape.rank() > 0,u::format("dimensions not match (%zu vs %zu)", dshape.rank(),dshape.rank()));
-                    const Ti * const src_ = reinterpret_cast<const Ti * const >(src);
-                    To * const dst_ = reinterpret_cast<To * const >(dst);
-                    std::vector<double> dprod(dshape.rank(), 1);
-                    std::vector<double> diprod(dshape.rank(), 1);
-                    for (int i = static_cast<int>(dshape.rank()) - 2; i >= 0; --i) {
-                        diprod[i] = diprod[i + 1] * dshape[i + 1];
-                        dprod[i] = dprod[i + 1] * sshape[i + 1];
-                    }
-                    #ifdef _OPENMP
-                    #pragma omp parallel for
-                    #endif
-                    for (size_t index = 0; index < static_cast<size_t>(dprod[0] * sshape[0]); ++index) {
-                        size_t idx = index;
-                        size_t nidx = 0;
-                        for (size_t dim = 0; dim < dprod.size(); ++dim) {
-                            size_t i = static_cast<size_t>(idx / dprod[dim]);
-                            nidx += i * diprod[dim_map.at(static_cast<unsigned int>(dim))];
-                            idx = idx % static_cast<size_t>(dprod[dim]);
-                        }
-                        dst_[nidx] = src_[index];
-                    }
-                    u_fun_exit(0, 0);
-                }
-            };
 
             #else
 
@@ -506,7 +269,7 @@ namespace u {
             template<typename To, typename T1, typename T2>
             class Divide {
             public:
-                static To run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+                static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
                     cpu::divide<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
                 }
             };
@@ -514,7 +277,7 @@ namespace u {
             template<typename To, typename T1, typename T2>
             class Mod {
             public:
-                static To run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+                static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
                     cpu::mod<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
                 }
             };
@@ -524,6 +287,22 @@ namespace u {
             public:
                 static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
                     cpu::pow<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+                }
+            };
+
+            template<typename To, typename T1, typename T2>
+            class Maximum {
+            public:
+                static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+                    cpu::max<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+                }
+            };
+
+            template<typename To, typename T1, typename T2>
+            class Minimum {
+            public:
+                static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+                    cpu::min<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
                 }
             };
 
