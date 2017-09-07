@@ -1,5 +1,5 @@
 # C++ Tensor Library
-Head file **ONLY** Tensor library is inspired by numpy and is implemented with similar API.
+Head file **ONLY** Tensor library, inspired by numpy and implemented with similar API.
 
 ## Prerequisite
 - [libu](https://github.com/xiaoxTM/libu) (for logging and test) 
