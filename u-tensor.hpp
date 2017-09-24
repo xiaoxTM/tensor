@@ -2,8 +2,8 @@
 #define __U_TENSOR_TENSOR_HPP__
 
 /***
-u-tensor.hpp base functions for tensor
-Copyright (C) 2017  Renweu Gao
+u-tensor.hpp base functions for libu
+Copyright (C) 2013  Renweu Gao
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "u-mm.hpp"
 
 #include <vector>
-#include <iomanip>
 
 namespace u {
 
@@ -40,14 +39,13 @@ namespace u {
 
         private:
             std::shared_ptr<unsigned char> data_;
-            Shape shape_;
             DType type_;
-            int print_precision_;
+            Shape shape_;
 
             size_t print_(size_t rank, size_t begin, std::ostream &os) {
                 size_t end = begin;
                 if (shape_.rank() == 0) {
-                    op::run<Tensor, op::Print>(*this, begin, end, os, print_precision_);
+                    op::run<Tensor, op::Print>(*this, begin, end, os);
                 } else {
                     os << "[";
                     if (rank < shape_.rank() - 1) {
@@ -62,7 +60,7 @@ namespace u {
                         }
                     } else {
                         end += shape_[rank];
-                        op::run<Tensor, op::Print>(*this, begin, end, os, print_precision_);
+                        op::run<Tensor, op::Print>(*this, begin, end, os);
                     }
                     if (rank == 0) {
                         os << "]";
@@ -85,16 +83,11 @@ namespace u {
 
             virtual ~Tensor() {}
 
-            Tensor(): data_(nullptr), shape_(), type_(DType::invalid), print_precision_(std::numeric_limits<long double>::digits10 + 1) {}
+            Tensor(): data_(nullptr), type_(DType::invalid), shape_() {}
 
-            Tensor(DType type) : data_(nullptr), shape_(), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
-                u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
-                u_fun_exit(0, 0);
-            }
+            Tensor(DType type) : data_(nullptr), type_(type), shape_() {u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");}
 
-            Tensor(const Shape& shape, DType type, bool lazy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
+            Tensor(const Shape& shape, DType type, bool lazy = false) : shape_(shape), type_(type) {
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
                 u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
@@ -102,11 +95,9 @@ namespace u {
                 if (!lazy) {
                     malloc();
                 }
-                u_fun_exit(0, 0);
             }
 
-            Tensor(const std::vector<size_t> &shape, DType type, bool lazy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
+            Tensor(const std::vector<size_t> &shape, DType type, bool lazy = false) : shape_(shape), type_(type) {
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
                 u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
@@ -114,11 +105,9 @@ namespace u {
                 if (!lazy) {
                     malloc();
                 }
-                u_fun_exit(0, 0);
             }
 
-            Tensor(unsigned char * data, const std::vector<size_t> &shape, DType type, bool copy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
+            Tensor(unsigned char * data, const std::vector<size_t> &shape, DType type, bool copy = false) : shape_(shape), type_(type) {
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
                 u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
@@ -130,114 +119,86 @@ namespace u {
                     // use void free to avoid freeing referred memory which should be freed by caller
                     data_.reset(data, mm::no_free);
                 }
-                u_fun_exit(0, 0);
             }
 
-            Tensor(unsigned char * data, const Shape& shape, DType type, bool copy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
+            Tensor(unsigned char * data, const Shape& shape, DType type, bool copy = false) : shape_(shape), type_(type) {
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
                 u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
                 u_assert(data != nullptr, "data can not be null pointer");
                 if (copy) {
+                    //size_t size_in_byte = bytesize();
+                    //malloc();
+                    //mm::upload(data_.get(), data, bytesize());
                     _init<unsigned char>(data, bytesize());
                 } else {
+                    // use void free to avoid freeing referred memory which should be freed by caller
                     data_.reset(data, mm::no_free);
                 }
-                u_fun_exit(0, 0);
             }
 
-            Tensor(const unsigned char * const data, const Shape &shape, DType type) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
+            Tensor(const unsigned char * const data, const Shape &shape, DType type) : shape_(shape), type_(type) {
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
                 u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
                 u_assert(data != nullptr, "data can not be null pointer");
+                //malloc();
+                //mm::upload(data_.get(), data, bytesize());
                 _init<unsigned char>(data, bytesize());
-                u_fun_exit(0, 0);
             }
 
-            Tensor(const unsigned char * const data, const std::vector<size_t> &shape, DType type) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
+            Tensor(const unsigned char * const data, const std::vector<size_t> &shape, DType type) : shape_(shape), type_(type) {
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
                 u_assert(v > 0, "no allowing copy tensor with 0 size.");
                 u_assert(data != nullptr, "data can not be null pointer");
+                //malloc();
+                //mm::upload(data_.get(), data, bytesize());
                 _init<unsigned char>(data, bytesize());
-                u_fun_exit(0, 0);
             }
 
             // invoked in the following case
             // Tensor t1(t2);
-            Tensor(const Tensor &t) : shape_(t.shape()), type_(t.type()), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
+            Tensor(const Tensor &t) : type_(t.type()), shape_(t.shape()) {
                 u_assert(type_ < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
                 u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
                 u_assert(t.cref() != nullptr, "data can not be null pointer");
+                //malloc();
+                //mm::upload(data_.get(), t.cref(), bytesize());
                 _init<unsigned char>(t.cref(), bytesize());
-                u_fun_exit(0, 0);
             }
 
-            Tensor(const char& data) : shape_(), type_(DType::int8), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
-                _init<char>(&data);
-                u_fun_exit(0, 0);
-            }
+            Tensor(const char& data) : type_(DType::int8), shape_() {_init<char>(&data);}
 
-            Tensor(const unsigned char& data) : shape_(), type_(DType::uint8), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
-                _init<unsigned char>(&data);
-                u_fun_exit(0, 0);
-            }
+            Tensor(const unsigned char& data) : type_(DType::uint8), shape_() {_init<unsigned char>(&data);}
 
-            Tensor(const short& data) : shape_(), type_(DType::int16), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
-                _init<short>(&data);
-                u_fun_exit(0, 0);
-            }
+            Tensor(const short& data) : type_(DType::int16), shape_() {_init<short>(&data);}
 
-            Tensor(const unsigned short& data) : shape_(), type_(DType::uint16), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
-                _init<unsigned short>(&data);
-                u_fun_exit(0, 0);
-            }
+            Tensor(const unsigned short& data) : type_(DType::uint16), shape_() {_init<unsigned short>(&data);}
 
-            Tensor(const int& data) : shape_(), type_(DType::int32), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
-                _init<int>(&data);
-                u_fun_exit(0, 0);
-            }
+            Tensor(const int& data) : type_(DType::int32), shape_() {_init<int>(&data);}
 
-            Tensor(const unsigned int& data) : shape_(), type_(DType::uint32), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
-                _init<unsigned int>(&data);
-                u_fun_exit(0, 0);
-            }
+            Tensor(const unsigned int& data) : type_(DType::uint32), shape_() {_init<unsigned int>(&data);}
 
-            Tensor(const long& data) : shape_(), type_(DType::int64), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
-                _init<long>(&data);
-                u_fun_exit(0, 0);
-            }
+            Tensor(const long& data) : type_(DType::int64), shape_() {_init<long>(&data);}
 
-            Tensor(const size_t& data) : shape_(), type_(DType::uint64), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
-                _init<size_t>(&data);
-                u_fun_exit(0, 0);
-            }
+            Tensor(const size_t& data) : type_(DType::uint64), shape_() {_init<size_t>(&data);}
 
-            Tensor(const float& data) : shape_(), type_(DType::float32), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
-                _init<float>(&data);
-                u_fun_exit(0, 0);
-            }
+            Tensor(const float& data) : type_(DType::float32), shape_() {_init<float>(&data);}
 
-            Tensor(const double& data) : shape_(), type_(DType::float64), print_precision_(std::numeric_limits<long double>::digits10 + 1) {
-                u_fun_enter(0, 0);
-                _init<double>(&data);
-                u_fun_exit(0, 0);
-            }
+            Tensor(const double& data) : type_(DType::float64), shape_() {_init<double>(&data);}
+
+            template<typename T>
+            static Tensor create(T data, bool copy) {return (Tensor(reinterpret_cast<unsigned char *>(&data), Shape(), ctype<T>(), copy));}
+
+            static Tensor create(const Shape &shape, DType type) {return Tensor(shape, type);}
+
+            template<typename T>
+            static Tensor create(T *data, const Shape &shape, bool copy) {return (Tensor(reinterpret_cast<unsigned char *>(data), shape, ctype<T>(), copy));}
+
+            template<typename T>
+            static Tensor create(const std::vector<T> &data, const Shape &shape, bool copy) {return (Tensor(reinterpret_cast<unsigned char *>(data.data()), shape, ctype<T>(), copy));}
 
             friend std::ostream & operator <<(std::ostream &os, const Tensor &t) {
                 const_cast<Tensor&>(t).print_(0, 0, os);
@@ -250,34 +211,25 @@ namespace u {
                 return oss.str();
             }
 
-            int precision() {return print_precision_;}
-            void precision(int prec) {print_precision_ = prec;}
-
             void malloc(const Shape &shape, DType type) {
-                u_fun_enter(0, 0);
                 u_assert(data_ == nullptr, "data not empty. memory may be already allocated. use `realloc' instead");
                 if (data_ != nullptr) {
                     data_.reset(mm::malloc(shape.volume(), dtype_size(type)), mm::mfree);
                 }
-                u_fun_exit(0, 0);
             }
 
             void realloc(const Shape &shape) {data_.reset(mm::malloc(shape.volume(), dtype_size(type_)), mm::mfree);}
 
             void malloc(DType type) {
-                u_fun_enter(0, 0);
                 u_assert(data_ == nullptr, "data not empty. memory may be already allocated.");
                 if (data_ != nullptr) {
                     data_.reset(mm::malloc(volume(), dtype_size(type)), mm::mfree);
                 }
-                u_fun_exit(0, 0);
             }
 
             void malloc() {
-                u_fun_enter(0, 0);
                 u_assert(data_.get() == nullptr, "data already allocated.");
                 data_.reset(mm::malloc(volume(), dtype_size(type_)), mm::mfree);
-                u_fun_exit(0, 0);
             }
 
             const unsigned char *cref() const {return data_.get();}
@@ -305,6 +257,10 @@ namespace u {
             Shape shape() {return (shape_);}
 
             const Shape shape() const {return (shape_);}
+
+            // Tensor operator [](const std::vector<std::vector<int> > & index) {
+            //     return Tensor(0);
+            // }
 
             // clip in inplace mode
             void clip_inplace(double min, double max) {
@@ -378,15 +334,11 @@ namespace u {
             }
 
             // non-copy assign assignment
-            Tensor operator =(Tensor d) {
+            Tensor operator =(Tensor &d) {
                 u_fun_enter(0, 0);
-                if(shape_ == d.shape() && type_ == d.type()) {
-                    op::run2<Tensor, op::Assign>(*this, d);
-                } else {
-                    type_ = d.type();
-                    shape_ = d.shape();
-                    data_.reset(d.ref(), mm::no_free);
-                }
+                type_ = d.type();
+                shape_ = d.shape();
+                data_.reset(d.ref(), mm::no_free);
                 u_fun_exit(0, 0);
                 return (*this);
             }
@@ -395,9 +347,10 @@ namespace u {
             Tensor &operator ()(const Tensor &d) {
                 u_fun_enter(0, 0);
                 if (type_ == DType::invalid) {
-                    // assign to no initialized tensor
+                    // assign to no initialized tensor       ^
                     type_ = d.type();
                     shape_ = d.shape();
+                    //data_.reset(mm::copy(d.cref(), d.volume()), mm::mfree);
                     _init(d.cref(), d.volume());
                 } else {
                     Shape broadcasted = shape_.broadcast(d.shape());
@@ -408,389 +361,339 @@ namespace u {
                 return (*this);
             }
 
-            Tensor &operator ()(const Shape &shape, const DType type, bool lazy) {
-                u_fun_enter(0, 0);
-                if (type_ != DType::invalid) {
-                    // assign to no initialized tensor
-                    type_ = type;
-                }
-                data_ = nullptr;
-                if (!lazy) {
-                    malloc();
-                }
-                u_fun_exit(0, 0);
-                return (*this);
-            }
-
             Tensor operator ==(const Tensor &d) {
                 u_fun_enter(0, 0);
-                u_assert(shape_.broadcastable(d.shape()), u::format(" == operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
+                u_assert(shape_ == d.shape() || shape_.rank() == 0 || d.rank() == 0, u::format(" == operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
                 if (is_float(type_) || is_float(d.type())) {
                     u::log::warning("equal operation between float number is not recomamnded");
                 }
-                Tensor ret(shape_.broadcast(d.shape()), DType::uint8, false);
+                Shape _shape_ = shape_;
+                if (shape_ != d.shape()) {
+                    _shape_ = shape_.broadcast(d.shape());
+                }
+                Tensor ret(_shape_, DType::uint8, false);
                 op::run3<Tensor, op::Equal>(ret, *this, d);
                 u_fun_exit(0, 0);
                 return (ret);
             }
 
             friend Tensor operator ==(const char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) == rhs);
             }
 
             friend Tensor operator ==(const unsigned char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) == rhs);
             }
 
             friend Tensor operator ==(const short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) == rhs);
             }
 
             friend Tensor operator ==(const unsigned short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) == rhs);
             }
 
             friend Tensor operator ==(const int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) == rhs);
             }
 
             friend Tensor operator ==(const unsigned int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) == rhs);
             }
 
             friend Tensor operator ==(const long &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) == rhs);
             }
 
             friend Tensor operator ==(const size_t &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) == rhs);
             }
 
             friend Tensor operator ==(const float &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) == rhs);
             }
 
             friend Tensor operator ==(const double &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) == rhs);
             }
 
             Tensor operator !=(const Tensor &d) {
                 u_fun_enter(0, 0);
-                u_assert(shape_.broadcastable(d.shape()), u::format(" != operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
+                u_assert(shape_ == d.shape() || shape_.rank() == 0 || d.rank() == 0, u::format(" != operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
                 if (is_float(type_) || is_float(d.type())) {
                     u::log::warning("nequal operation between float number is not recomamnded");
                 }
-                Tensor ret(shape_.broadcast(d.shape()), DType::uint8, false);
+                Shape _shape_ = shape_;
+                if (shape_ != d.shape()) {
+                    _shape_ = shape_.broadcast(d.shape());
+                }
+                Tensor ret(_shape_, DType::uint8, false);
                 op::run3<Tensor, op::NotEqual>(ret, *this, d);
                 u_fun_exit(0, 0);
                 return (ret);
             }
 
             friend Tensor operator !=(const char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) != rhs);
             }
 
             friend Tensor operator !=(const unsigned char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) != rhs);
             }
 
             friend Tensor operator !=(const short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) != rhs);
             }
 
             friend Tensor operator !=(const unsigned short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) != rhs);
             }
 
             friend Tensor operator !=(const int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) != rhs);
             }
 
             friend Tensor operator !=(const unsigned int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) != rhs);
             }
 
             friend Tensor operator !=(const long &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) != rhs);
             }
 
             friend Tensor operator !=(const size_t &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) != rhs);
             }
 
             friend Tensor operator !=(const float &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) != rhs);
             }
 
             friend Tensor operator !=(const double &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) != rhs);
             }
 
             Tensor operator >(const Tensor &d) {
                 u_fun_enter(0, 0);
-                u_assert(shape_.broadcastable(d.shape()), u::format(" != operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
+                u_assert(shape_ == d.shape() || shape_.rank() == 0 || d.rank() == 0, u::format(" != operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
                 if (is_float(type_) || is_float(d.type())) {
                     u::log::warning("nequal operation between float number is not recomamnded");
                 }
-                Tensor ret(shape_.broadcast(d.shape()), DType::uint8, false);
+                Shape _shape_ = shape_;
+                if (shape_ != d.shape()) {
+                    _shape_ = shape_.broadcast(d.shape());
+                }
+                Tensor ret(_shape_, DType::uint8, false);
                 op::run3<Tensor, op::Greater>(ret, *this, d);
                 u_fun_exit(0, 0);
                 return (ret);
             }
 
             friend Tensor operator >(const char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) > rhs);
             }
 
             friend Tensor operator >(const unsigned char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) > rhs);
             }
 
             friend Tensor operator >(const short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) > rhs);
             }
 
             friend Tensor operator >(const unsigned short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) > rhs);
             }
 
             friend Tensor operator >(const int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) > rhs);
             }
 
             friend Tensor operator >(const unsigned int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) > rhs);
             }
 
             friend Tensor operator >(const long &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) > rhs);
             }
 
             friend Tensor operator >(const size_t &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) > rhs);
             }
 
             friend Tensor operator >(const float &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) > rhs);
             }
 
             friend Tensor operator >(const double &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) > rhs);
             }
 
             Tensor operator >=(const Tensor &d) {
                 u_fun_enter(0, 0);
-                u_assert(shape_.broadcastable(d.shape()), u::format(" != operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
+                u_assert(shape_ == d.shape() || shape_.rank() == 0 || d.rank() == 0, u::format(" != operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
                 if (is_float(type_) || is_float(d.type())) {
                     u::log::warning("nequal operation between float number is not recomamnded");
                 }
-                Tensor ret(shape_.broadcast(d.shape()), DType::uint8, false);
+                Shape _shape_ = shape_;
+                if (shape_ != d.shape()) {
+                    _shape_ = shape_.broadcast(d.shape());
+                }
+                Tensor ret(_shape_, DType::uint8, false);
                 op::run3<Tensor, op::GreaterEqual>(ret, *this, d);
                 u_fun_exit(0, 0);
                 return (ret);
             }
 
             friend Tensor operator >=(const char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) >= rhs);
             }
 
             friend Tensor operator >=(const unsigned char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) >= rhs);
             }
 
             friend Tensor operator >=(const short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) >= rhs);
             }
 
             friend Tensor operator >=(const unsigned short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) >= rhs);
             }
 
             friend Tensor operator >=(const int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) >= rhs);
             }
 
             friend Tensor operator >=(const unsigned int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) >= rhs);
             }
 
             friend Tensor operator >=(const long &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) >= rhs);
             }
 
             friend Tensor operator >=(const size_t &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) >= rhs);
             }
 
             friend Tensor operator >=(const float &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) >= rhs);
             }
 
             friend Tensor operator >=(const double &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) >= rhs);
             }
 
             Tensor operator <(const Tensor &d) {
                 u_fun_enter(0, 0);
-                u_assert(shape_.broadcastable(d.shape()), u::format(" != operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
+                u_assert(shape_ == d.shape() || shape_.rank() == 0 || d.rank() == 0, u::format(" != operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
                 if (is_float(type_) || is_float(d.type())) {
                     u::log::warning("nequal operation between float number is not recomamnded");
                 }
-                Tensor ret(shape_.broadcast(d.shape()), DType::uint8, false);
+                Shape _shape_ = shape_;
+                if (shape_ != d.shape()) {
+                    _shape_ = shape_.broadcast(d.shape());
+                }
+                Tensor ret(_shape_, DType::uint8, false);
                 op::run3<Tensor, op::Less>(ret, *this, d);
                 u_fun_exit(0, 0);
                 return (ret);
             }
 
             friend Tensor operator <(const char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) < rhs);
             }
 
             friend Tensor operator <(const unsigned char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) < rhs);
             }
 
             friend Tensor operator <(const short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) < rhs);
             }
 
             friend Tensor operator <(const unsigned short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) < rhs);
             }
 
             friend Tensor operator <(const int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) < rhs);
             }
 
             friend Tensor operator <(const unsigned int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) < rhs);
             }
 
             friend Tensor operator <(const long &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) < rhs);
             }
 
             friend Tensor operator <(const size_t &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) < rhs);
             }
 
             friend Tensor operator <(const float &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) < rhs);
             }
 
             friend Tensor operator <(const double &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) < rhs);
             }
 
             Tensor operator <=(const Tensor &d) {
                 u_fun_enter(0, 0);
-                u_assert(shape_.broadcastable(d.shape()), u::format(" != operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
+                u_assert(shape_ == d.shape() || shape_.rank() == 0 || d.rank() == 0, u::format(" != operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
                 if (is_float(type_) || is_float(d.type())) {
                     u::log::warning("nequal operation between float number is not recomamnded");
                 }
-                Tensor ret(shape_.broadcast(d.shape()), DType::uint8, false);
+                Shape _shape_ = shape_;
+                if (shape_ != d.shape()) {
+                    _shape_ = shape_.broadcast(d.shape());
+                }
+                Tensor ret(_shape_, DType::uint8, false);
                 op::run3<Tensor, op::LessEqual>(ret, *this, d);
                 u_fun_exit(0, 0);
                 return (ret);
             }
 
             friend Tensor operator <=(const char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) <= rhs);
             }
 
             friend Tensor operator <=(const unsigned char &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) <= rhs);
             }
 
             friend Tensor operator <=(const short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) <= rhs);
             }
 
             friend Tensor operator <=(const unsigned short &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) <= rhs);
             }
 
             friend Tensor operator <=(const int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) <= rhs);
             }
 
             friend Tensor operator <=(const unsigned int &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) <= rhs);
             }
 
             friend Tensor operator <=(const long &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) <= rhs);
             }
 
             friend Tensor operator <=(const size_t &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) <= rhs);
             }
 
             friend Tensor operator <=(const float &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) <= rhs);
             }
 
             friend Tensor operator <=(const double &lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) <= rhs);
             }
 
@@ -798,8 +701,8 @@ namespace u {
                 u_fun_enter(0, 0);
                 Tensor one(1);
                 op::run3<Tensor, op::Add>(*this, *this, one);
-                u_fun_exit(0, 0);
                 return (*this);
+                u_fun_exit(0, 0);
             }
 
             Tensor operator ++(int) {
@@ -827,128 +730,110 @@ namespace u {
             }
 
             void operator +=(const Tensor &d) {
-                u_fun_enter(0, 0);
                 op::run3<Tensor, op::Add>(*this, *this, d);
-                u_fun_exit(0, 0);
             }
 
             void operator -=(const Tensor &d) {
-                u_fun_enter(0, 0);
                 op::run3<Tensor, op::Subtract>(*this, *this, d);
-                u_fun_exit(0, 0);
             }
 
             void operator *=(const Tensor &d) {
-                u_fun_enter(0, 0);
                 op::run3<Tensor, op::Multiply>(*this, *this, d);
-                u_fun_exit(0, 0);
             }
 
             void operator /=(const Tensor &d) {
-                u_fun_enter(0, 0);
                 op::run3<Tensor, op::Divide>(*this, *this, d);
-                u_fun_exit(0, 0);
             }
 
             void operator ^=(const Tensor &d) {
-                u_fun_enter(0, 0);
                 op::run3<Tensor, op::Pow>(*this, *this, d);
-                u_fun_exit(0, 0);
             }
 
             friend Tensor operator +(short lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) + rhs);
             }
 
             friend Tensor operator +(unsigned short lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) + rhs);
             }
 
             friend Tensor operator +(int lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) + rhs);
             }
 
             friend Tensor operator +(unsigned int lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) + rhs);
             }
 
             friend Tensor operator +(long lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) + rhs);
             }
 
             friend Tensor operator +(size_t lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) + rhs);
             }
 
             friend Tensor operator +(float lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) + rhs);
             }
 
             friend Tensor operator +(double lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) + rhs);
             }
 
             Tensor operator +(const Tensor &d) {
                 u_fun_enter(0, 0);
-                u_assert(shape_.broadcastable(d.shape()), u::format(" == operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
-                Tensor ret(shape_.broadcast(d.shape()), std::max(type_, d.type()), false);
+                u_assert(shape_ == d.shape() || shape_.rank() == 0 || d.rank() == 0, u::format(" == operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
+                Shape _shape_ = shape_;
+                if (shape_ != d.shape()) {
+                    _shape_ = shape_.broadcast(d.shape());
+                }
+                Tensor ret(_shape_, std::max(type_, d.type()), false);
                 op::run3<Tensor, op::Add>(ret, *this, d);
                 u_fun_exit(0, 0);
                 return (ret);
             }
 
             friend Tensor operator -(short lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) - rhs);
             }
 
             friend Tensor operator -(unsigned short lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) - rhs);
             }
 
             friend Tensor operator -(int lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) - rhs);
             }
 
             friend Tensor operator -(unsigned int lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) - rhs);
             }
 
             friend Tensor operator -(long lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) - rhs);
             }
 
             friend Tensor operator -(size_t lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) - rhs);
             }
 
             friend Tensor operator -(float lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) - rhs);
             }
 
             friend Tensor operator -(double lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) - rhs);
             }
 
             Tensor operator -(const Tensor &d) {
                 u_fun_enter(0, 0);
-                u_assert(shape_.broadcastable(d.shape()), u::format(" == operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
-                Tensor ret(shape_.broadcast(d.shape()), std::max(type_, d.type()), false);
+                u_assert(shape_ == d.shape() || shape_.rank() == 0 || d.rank() == 0, u::format(" == operation can only be applied to tensor have same shape. given (%s, %s)", shape_.str().c_str(), d.shape().str().c_str()));
+                Shape _shape_ = shape_;
+                if (shape_ != d.shape()) {
+                    _shape_ = shape_.broadcast(d.shape());
+                }
+                Tensor ret(_shape_, std::max(type_, d.type()), false);
                 op::run3<Tensor, op::Subtract>(ret, *this, d);
                 u_fun_exit(0, 0);
                 return (ret);
@@ -966,144 +851,132 @@ namespace u {
             }
 
             friend Tensor operator *(short lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) * rhs);
             }
 
             friend Tensor operator *(unsigned short lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) * rhs);
             }
 
             friend Tensor operator *(int lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) * rhs);
             }
 
             friend Tensor operator *(unsigned int lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) * rhs);
             }
 
             friend Tensor operator *(long lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) * rhs);
             }
 
             friend Tensor operator *(size_t lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) * rhs);
             }
 
             friend Tensor operator *(float lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) * rhs);
             }
 
             friend Tensor operator *(double lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) * rhs);
             }
 
             Tensor operator *(const Tensor &d) {
                 u_fun_enter(0, 0);
-                Tensor ret(shape_.broadcast(d.shape()), std::max(type_, d.type()), false);
+                Shape _shape_ = shape_;
+                if (shape_ != d.shape()) {
+                    _shape_ = shape_.broadcast(d.shape());
+                }
+                Tensor ret(_shape_, std::max(type_, d.type()), false);
                 op::run3<Tensor, op::Multiply>(ret, *this, d);
                 u_fun_exit(0, 0);
                 return (ret);
             }
 
             friend Tensor operator /(short lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) / rhs);
             }
 
             friend Tensor operator /(unsigned short lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) / rhs);
             }
 
             friend Tensor operator /(int lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) / rhs);
             }
 
             friend Tensor operator /(unsigned int lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) / rhs);
             }
 
             friend Tensor operator /(long lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) / rhs);
             }
 
             friend Tensor operator /(size_t lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) / rhs);
             }
 
             friend Tensor operator /(float lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) / rhs);
             }
 
             friend Tensor operator /(double lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) / rhs);
             }
 
             Tensor operator /(const Tensor &d) {
                 u_fun_enter(0, 0);
-                Tensor ret(shape_.broadcast(d.shape()), std::max(type_, d.type()), false);
+                Shape _shape_ = shape_;
+                if (shape_ != d.shape()) {
+                    _shape_ = shape_.broadcast(d.shape());
+                }
+                Tensor ret(_shape_, std::max(type_, d.type()), false);
                 op::run3<Tensor, op::Divide>(ret, *this, d);
                 u_fun_exit(0, 0);
                 return (ret);
             }
 
             friend Tensor operator ^(short lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) ^ rhs);
             }
 
             friend Tensor operator ^(unsigned short lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) ^ rhs);
             }
 
             friend Tensor operator ^(int lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) ^ rhs);
             }
 
             friend Tensor operator ^(unsigned int lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) ^ rhs);
             }
 
             friend Tensor operator ^(long lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) ^ rhs);
             }
 
             friend Tensor operator ^(size_t lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) ^ rhs);
             }
 
             friend Tensor operator ^(float lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) ^ rhs);
             }
 
             friend Tensor operator ^(double lhs, const Tensor &rhs) {
-                u_fun_here(0, 0);
                 return (Tensor(lhs) ^ rhs);
             }
 
             Tensor operator ^(const Tensor &d) {
                 u_fun_enter(0, 0);
-                Tensor ret(shape_.broadcast(d.shape()), std::max(type_, d.type()), false);
+                Shape _shape_ = shape_;
+                if (shape_ != d.shape()) {
+                    _shape_ = shape_.broadcast(d.shape());
+                }
+                Tensor ret(_shape_, std::max(type_, d.type()), false);
                 op::run3<Tensor, op::Pow>(ret, *this, d);
                 u_fun_exit(0, 0);
                 return (ret);
@@ -1122,23 +995,20 @@ namespace u {
 
             template<typename T>
             Tensor astype() {
-                u_fun_here(0, 0);
                 return astype(ctype<T>());
             }
 
             template<typename T>
             const T* cast() {
-                u_fun_enter(0, 0);
                 u_assert(ctype<T>() == type_, u::format("cast to different data type not supported."));
-                u_fun_exit(0, 0);
                 return reinterpret_cast<T*>(data_.get());
             }
 
             // flatten change tensor description **ONLY** if copy is false
             void flatten_inplace(int beg_axis=0, int end_axis=-1) {
                 u_fun_enter(0, 0);
-                size_t beg = shape_.axis_normalize(beg_axis);
-                size_t end = shape_.axis_normalize(end_axis);
+                int beg = shape_.axis_normalize(beg_axis);
+                int end = shape_.axis_normalize(end_axis);
                 std::vector<size_t> shape;
                 for (size_t i=0; i<shape_.size(); ++i) {
                     if (i <= beg) {
@@ -1161,27 +1031,17 @@ namespace u {
                 return ret;
             }
 
-            void reshape_inplace(const Shape& shape) {
-                u_fun_here(0, 0);
-                shape_.reshape(shape);
-            }
+            void reshape_inplace(const Shape& shape) {shape_.reshape(shape);}
 
-            void reshape_inplace(const std::vector<int> &shape) {
-                u_fun_here(0, 0);
-                shape_.reshape(shape);
-            }
+            void reshape_inplace(const std::vector<int> &shape) {shape_.reshape(shape);}
 
             Tensor reshape(const Shape& shape) {
-                u_fun_enter(0, 0);
                 Tensor ret(*this);
-                u_fun_exit(0, 0);
                 return ret.reshape(shape);
             }
 
             Tensor reshape(const std::vector<int> &shape) {
-                u_fun_enter(0, 0);
                 Tensor ret(*this);
-                u_fun_exit(0, 0);
                 return ret.reshape(shape);
             }
 
@@ -1201,111 +1061,71 @@ namespace u {
             }
 
             Tensor squeeze() {
-                u_fun_enter(0, 0);
                 Tensor ret(*this);
                 ret.squeeze();
-                u_fun_exit(0, 0);
                 return ret;
             }
 
             void expand_dims_inplace(const int axis) {
-                u_fun_enter(0, 0);
                 size_t _axis_ = shape_.axis_normalize(axis);
                 shape_.insert(shape_.begin() + _axis_, 1);
-                u_fun_exit(0, 0);
             }
 
             Tensor expand_dims(const int axis) {
-                u_fun_enter(0, 0);
                 Tensor ret(*this);
                 ret.expand_dims(axis);
-                u_fun_exit(0, 0);
                 return ret;
             }
 
             static Tensor zeros(const Shape &shape, const DType type) {
-                u_fun_here(0, 0);
                 return (Tensor(shape, type, false));
             }
 
             static Tensor zeros_like(const Tensor &t, const DType type=DType::invalid) {
-                u_fun_enter(0, 0);
                 DType _type_ = (type == DType::invalid ? t.type() : type);
-                u_fun_exit(0, 0);
                 return zeros(t.shape(), _type_);
             }
 
             static Tensor ones(const Shape &shape, const DType type) {
-                u_fun_enter(0, 0);
                 Tensor t(shape, type, true);
                 t.malloc();
                 t += 1;
-                u_fun_exit(0, 0);
                 return (t);
             }
 
             static Tensor ones_like(const Tensor &t, const DType type=DType::invalid) {
-                u_fun_enter(0, 0);
                 DType _type_ = (type == DType::invalid ? t.type() : type);
-                u_fun_exit(0, 0);
                 return ones(t.shape(), _type_);
             }
 
-            inline Tensor sum(const int axis = u::tensor::all, const DType type = DType::float32, bool keepdims=false) {
-                u_fun_here(0, 0);
-                return dimension_op_run_<op::Sum>(axis, type, keepdims);
-            }
+            inline Tensor sum(const int axis = u::tensor::all, const DType type = DType::float32, bool keepdims=false) {return dimension_op_run_<op::Sum>(axis, type, keepdims);}
 
-            inline Tensor mean(const int axis = u::tensor::all, const DType type = DType::float32, bool keepdims=false) {
-                u_fun_here(0, 0);
-                return dimension_op_run_<op::Mean>(axis, type, keepdims);
-            }
+            inline Tensor mean(const int axis = u::tensor::all, const DType type = DType::float32, bool keepdims=false) {return dimension_op_run_<op::Mean>(axis, type, keepdims);}
 
-            inline Tensor stddev(const int axis = u::tensor::all, const DType type = DType::float32, bool keepdims=false) {
-                u_fun_here(0, 0);
-                return dimension_op_run_<op::StdDev>(axis, type, keepdims);
-            }
+            inline Tensor stddev(const int axis = u::tensor::all, const DType type = DType::float32, bool keepdims=false) {return dimension_op_run_<op::StdDev>(axis, type, keepdims);}
 
-            inline Tensor max(const int axis = u::tensor::all, const DType type = DType::invalid, bool keepdims=false) {
-                u_fun_here(0, 0);
-                return dimension_op_run_<op::Max>(axis, type, keepdims);
-            }
+            inline Tensor max(const int axis = u::tensor::all, const DType type = DType::invalid, bool keepdims=false) {return dimension_op_run_<op::Max>(axis, type, keepdims);}
 
-            inline Tensor max(const Tensor &t) {
-                u_fun_enter(0, 0);
-                Tensor ret(shape_.broadcast(t.shape()), std::max(type_, t.type()), false);
-                op::run3<Tensor, op::Maximum>(ret, *this, t);
-                u_fun_exit(0, 0);
-                return ret;
-            }
+            inline Tensor min(const int axis = u::tensor::all, const DType type = DType::invalid, bool keepdims=false) {return dimension_op_run_<op::Min>(axis, type, keepdims);}
 
-            inline Tensor min(const int axis = u::tensor::all, const DType type = DType::invalid, bool keepdims=false) {
-                u_fun_here(0, 0);
-                return dimension_op_run_<op::Min>(axis, type, keepdims);
-            }
+            inline Tensor argmax(const int axis = u::tensor::all, const DType type = DType::uint32, bool keepdims=false) {return dimension_op_run_<op::ArgMax>(axis, type, keepdims);}
 
-            inline Tensor min(const Tensor &t) {
-                u_fun_enter(0, 0);
-                Tensor ret(shape_.broadcast(t.shape()), std::max(type_, t.type()), false);
-                op::run3<Tensor, op::Minimum>(ret, *this, t);
-                u_fun_exit(0, 0);
-                return ret;
-            }
+            inline Tensor argmin(const int axis = u::tensor::all, const DType type = DType::uint32, bool keepdims=false) {return dimension_op_run_<op::ArgMin>(axis, type, keepdims);}
 
-            inline Tensor argmax(const int axis = u::tensor::all, const DType type = DType::uint32, bool keepdims=false) {
-                u_fun_here(0, 0);
-                return dimension_op_run_<op::ArgMax>(axis, type, keepdims);
-            }
-
-            inline Tensor argmin(const int axis = u::tensor::all, const DType type = DType::uint32, bool keepdims=false) {
-                u_fun_here(0, 0);
-                return dimension_op_run_<op::ArgMin>(axis, type, keepdims);
-            }
-
-            Tensor transpose(const std::vector<int> &dim_changes) {
+            template<typename T>
+            Tensor transpose(const std::vector<T> &dim_changes) {
                 u_fun_enter(0, 0);
                 u_assert(shape_.size() == dim_changes.size(), u::format("dimensions not match (%zu vs %zu)", shape_.size(), dim_changes.size()));
-                std::vector<size_t> norm_dims = shape_.axis_normalize(dim_changes);
+                std::vector<size_t> norm_dims;
+                DType type = ctype<T>();
+                if (type == DType::float32 || type == DType::float64) {
+                    bool TRANSPOSE_FLOAT_DIMENSION_ORDER_NOT_SUPPORT = false;
+                    u_assert(TRANSPOSE_FLOAT_DIMENSION_ORDER_NOT_SUPPORT, "float type dimension specification not allowed");
+                } else if (type == DType::int8 || type == DType::int16 || type == DType::int32 || type == DType::int64) {
+                    norm_dims = shape_.axis_normalize<T>(dim_changes);
+                } else {
+                    norm_dims = dim_changes;
+                }
 
                 std::map<size_t, size_t> dim_map;
                 std::vector<size_t>::iterator it = norm_dims.end();
@@ -1325,84 +1145,19 @@ namespace u {
             }
 
             static bool any(const Tensor &t, bool positive=true) {
-                u_fun_enter(0, 0);
                 bool ans = false;
                 Tensor tans(static_cast<unsigned char>(1));
                 op::run2<Tensor, op::Any>(tans, t, positive);
                 ans = (*tans.cast<unsigned char>() == 1);
-                u_fun_exit(0, 0);
                 return ans;
             }
 
             static bool all(const Tensor &t, bool positive=true) {
-                u_fun_enter(0, 0);
                 bool ans = false;
                 Tensor tans(static_cast<unsigned char>(1));
                 op::run2<Tensor, op::All>(tans, t, positive);
                 ans = (*tans.cast<unsigned char>() == 1);
-                u_fun_exit(0, 0);
                 return ans;
-            }
-
-            //
-            // Tensor tile(const std::vector<size_t> &repeats) {
-            //     u_assert(shape_.rank() == repeats.size(), u::format("repeats should specify each axis for tile. need [%zu] axes but given [%zu]", shape_.rank(), repeats.size()));
-            //     Shape nshape(shape_.rank());
-            //     for (size_t i=shape_.rank()-1; i>=0; --i) {
-            //         nshape[i] = shape_[i];
-            //         if (repeats[i] > 0) {
-            //             nshape[i] *= repeats[i];            //
-            // Tensor tile(const std::vector<size_t> &repeats) {
-            //     u_assert(shape_.rank() == repeats.size(), u::format("repeats should specify each axis for tile. need [%zu] axes but given [%zu]", shape_.rank(), repeats.size()));
-            //     Shape nshape(shape_.rank());
-            //     for (size_t i=shape_.rank()-1; i>=0; --i) {
-            //         nshape[i] = shape_[i];
-            //         if (repeats[i] > 0) {
-            //             nshape[i] *= repeats[i];
-            //         }
-            //     }
-            //     Tensor ans(nshape, type_, false);
-            //     for (size_t i=shape_.rank()-1; i>=0; --i) {
-            //         nshape[i] = shape_[i];
-            //         if (repeats[i] > 0) {
-            //             nshape[i] *= repeats[i];
-            //         }
-            //     }
-            // }
-            //
-            // Tensor tile(const std::vector<size_t> &repeats) {
-            //     u_assert(shape_.rank() == repeats.size(), u::format("repeats should specify each axis for tile. need [%zu] axes but given [%zu]", shape_.rank(), repeats.size()));
-            //     Shape nshape(shape_.rank());
-            //     for (size_t i=shape_.rank()-1; i>=0; --i) {
-            //         nshape[i] = shape_[i];
-            //         if (repeats[i] > 0) {
-            //             nshape[i] *= repeats[i];
-            //         }
-            //     }
-            //     Tensor ans(nshape, type_, false);
-            //     for (size_t i=shape_.rank()-1; i>=0; --i) {
-            //         nshape[i] = shape_[i];
-            //         if (repeats[i] > 0) {
-            //             nshape[i] *= repeats[i];
-            //         }
-            //     }
-            // }
-
-            Tensor broadcast(const Shape &shape) {
-                u_fun_enter(0, 0);
-                Tensor ans;
-                if (shape_ == shape) {
-                    u::log::warning("It seems you try to broadcast tensor to the same shape. Tensor will ignore this operation and return `*this`");
-                    ans = *this;
-                } else {
-                    u_assert(shape_.rank() == shape.rank(), u::format("cannot broadcast from '%s' to '%s'", shape_.str().c_str(), shape.str().c_str()));
-                    for (int i=static_cast<int>(shape_.rank()-1); i>=0; --i) {
-                        u_assert(shape_[i] == shape[i] || (shape_[i] == 1), u::format("Tensor with shape %s cannot broadcast to Tensor with shape %s", shape_.str().c_str(), shape.str().c_str()));
-                    }
-                    ans(shape, type_, false);
-                    op::run2<Tensor, op::Broadcast>(ans, *this);
-                }
-                u_fun_exit(0, 0);
             }
         };
     }

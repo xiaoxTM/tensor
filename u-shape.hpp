@@ -1,24 +1,6 @@
 #ifndef __U_TENSOR_SHAPE_HPP__
 #define __U_TENSOR_SHAPE_HPP__
 
-/***
-u-shape.hpp base functions for tensor
-Copyright (C) 2017  Renweu Gao
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-***/
-
 #include <vector>
 #include <tuple>
 #include <algorithm>
@@ -59,18 +41,6 @@ namespace u {
                 u_fun_exit(0, 0);
                 return std::make_tuple(dim_size, previous, laters, offset);
             }
-
-            // std::vector<size_t> index_(const int axis) {
-            //     std::tuple<size_t, size_t, size_t, size_t> splits = prepare_for_dimension_operation_(axis);
-            //     size_t dim_size = std::get<0>(split);
-            //     size_t previous = std::get<1>(split);
-            //     size_t later    = std::get<2>(split);
-            //     size_t offset   = std::get<3>(split);
-            //     std::vector<size_t> ret(dim_size);
-            //     for (size_t i=0; i<dim_size; ++i) {
-            //         ret[i] = prev * later + i * offset + inner;
-            //     }
-            // }
 
             const std::tuple<size_t, size_t, size_t, size_t> prepare_for_dimension_operation_(const int axis) const {
                 // see @std::tuple<size_t, size_t, size_t, size_t> prepare_for_dimension_operation_(const int axis)
@@ -160,7 +130,7 @@ namespace u {
                 u_fun_enter(0, 0);
                 resize(shape.rank());
                 assign(shape.begin(), shape.end());
-                u_fun_exit(0, 0);
+                u_fun_enter(0, 0);
                 return *this;
             }
 
@@ -174,7 +144,7 @@ namespace u {
                         break;
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_enter(0, 0);
                 return same;
             }
 
@@ -188,7 +158,7 @@ namespace u {
                         break;
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_enter(0, 0);
                 return diff;
             }
 
@@ -202,7 +172,7 @@ namespace u {
                     }
                 }
                 os << "}" << std::flush;
-                u_fun_exit(0, 0);
+                u_fun_enter(0, 0);
                 return os;
             }
 
@@ -210,7 +180,7 @@ namespace u {
                 u_fun_enter(0, 0);
                 std::ostringstream oss;
                 oss << *this;
-                u_fun_exit(0, 0);
+                u_fun_enter(0, 0);
                 return oss.str();
             }
 
@@ -218,7 +188,7 @@ namespace u {
                 u_fun_enter(0, 0);
                 std::ostringstream oss;
                 oss << *this;
-                u_fun_exit(0, 0);
+                u_fun_enter(0, 0);
                 return oss.str();
             }
 
@@ -237,7 +207,7 @@ namespace u {
                         ret *= static_cast<T>((*this)[i]);
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_enter(0, 0);
                 return ret;
             }
 
@@ -254,7 +224,7 @@ namespace u {
                         ret *= static_cast<T>((*this)[i]);
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_enter(0, 0);
                 return ret;
             }
 
@@ -279,7 +249,7 @@ namespace u {
                     u_assert(adim == 1 || bdim == 1 || adim == bdim, u::format("broadcast: either both dimension euqal or one of them be 1. given {%zu, %zu}", adim, bdim));
                     ret[i] = std::max(adim, bdim);
                 }
-                u_fun_exit(0, 0);
+                u_fun_enter(0, 0);
                 return ret;
             }
 
@@ -295,7 +265,7 @@ namespace u {
                         a.insert(a.begin(), (b.rank() - a.rank()), 1);
                     }
                     ret.resize(a.rank());
-                    for(int i=static_cast<int>(ret.rank())-1; i>=0; --i){
+                    for(size_t i=ret.rank()+1; i>0; --i){
                         size_t adim = a[i];
                         size_t bdim = b[i];
                         u_assert(adim == 1 || bdim == 1 || adim == bdim, u::format("broadcast: either both dimension euqal or one of them be 1. given {%zu, %zu}", adim, bdim));
@@ -310,62 +280,20 @@ namespace u {
                 return broadcast(Shape(shape));
             }
 
-            bool broadcastable(const Shape &shape) {
-                u_fun_enter(0, 0);
-                bool ans = true;
-                if (shape != *this) {
-                    Shape a(*this);
-                    Shape b(shape);
-                    if (a.rank() > b.rank()) {
-                        b.insert(b.begin(), (a.rank() - b.rank()), 1);
-                    } else {
-                        a.insert(a.begin(), (b.rank() - a.rank()), 1);
-                    }
-                    for(int i=static_cast<int>(a.rank())-1; i>=0; --i){
-                        size_t adim = a[i];
-                        size_t bdim = b[i];
-                        if (adim != bdim && adim != 1 && bdim != 1 ) {
-                            ans = false;
-                            break;
-                        }
-                    }
-                }
-                u_fun_enter(0, 0);
-                return ans;
-            }
+            template<typename T=size_t>
+            inline size_t axis_normalize(const T axis) {return axis_normalize<T>(*this, axis);}
 
-            static std::tuple<Shape, Shape, Shape> adapt_shape(const Shape &shape1, const Shape &shape2) {
-                u_fun_enter(0, 0);
-                Shape ret = shape1;
-                Shape a(shape1);
-                Shape b(shape2);
-                if (shape1 != shape2) {
-                    if (a.rank() > b.rank()) {
-                        b.insert(b.begin(), (a.rank() - b.rank()), 1);
-                    } else if (a.rank() < b.rank()) {
-                        a.insert(a.begin(), (b.rank() - a.rank()), 1);
-                    }
-                    ret.resize(a.rank());
-                    for(int i=static_cast<int>(ret.rank())-1; i>=0; --i){
-                        size_t adim = a[i];
-                        size_t bdim = b[i];
-                        u_assert(adim == 1 || bdim == 1 || adim == bdim, u::format("broadcast: either both dimension euqal or one of them be 1. given {%zu, %zu}", adim, bdim));
-                        ret[i] = std::max(adim, bdim);
-                    }
-                }
-                u_fun_enter(0, 0);
-                return std::make_tuple(ret, a, b);
-            }
+            template<typename T=size_t>
+            inline const size_t axis_normalize(const T axis) const {return axis_normalize<T>(*this, axis);}
 
-            inline size_t axis_normalize(const int axis) {return axis_normalize(*this, axis);}
+            template<typename T=size_t>
+            inline std::vector<size_t> axis_normalize(const std::vector<T> &axis) {return axis_normalize<T>(*this, axis);}
 
-            inline const size_t axis_normalize(const int axis) const {return axis_normalize(*this, axis);}
+            template<typename T=size_t>
+            inline const std::vector<size_t> axis_normalize(const std::vector<T> &axis) const {return axis_normalize<T>(*this, axis);}
 
-            inline std::vector<size_t> axis_normalize(const std::vector<int> &axis) {return axis_normalize(*this, axis);}
-
-            inline const std::vector<size_t> axis_normalize(const std::vector<int> &axis) const {return axis_normalize(*this, axis);}
-
-            static size_t axis_normalize(const Shape &shape, const int axis) {
+            template<typename T=size_t>
+            static size_t axis_normalize(const Shape &shape, const T axis) {
                 // normalize axis
                 // if axis is positive, do nothing
                 // else convert it to positive by adding rank
@@ -378,11 +306,12 @@ namespace u {
             }
 
             // transform list of relative axes to absolute axes
-            static std::vector<size_t> axis_normalize(const Shape &shape, const std::vector<int> &axis) {
+            template<typename T=size_t>
+            static std::vector<size_t> axis_normalize(const Shape &shape, const std::vector<T> &axis) {
                 u_fun_enter(0, 0);
                 std::vector<size_t> ret(axis.size());
                 for (size_t idx = 0; idx < axis.size(); ++idx) {
-                    ret[idx] = axis_normalize(shape, axis[idx]);
+                    ret[idx] = axis_normalize<T>(shape, axis[idx]);
                 }
                 u_fun_exit(0, 0);
                 return (ret);

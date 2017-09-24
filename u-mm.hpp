@@ -2,8 +2,8 @@
 #define __U_TENSOR_MEMORY_MANAGER_HPP__
 
 /***
-u-mm.hpp base functions for tensor
-Copyright (C) 2017 Renweu Gao
+u-tensor.hpp base functions for libu
+Copyright (C) 2013  Renweu Gao
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

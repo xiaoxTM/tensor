@@ -2,8 +2,8 @@
 #define __U_TENSOR_DATA_TYPE_HPP__
 
 /***
-u-dtype.hpp base functions for tensor
-Copyright (C) 2017  Renweu Gao
+u-dtype.hpp base functions for libu
+Copyright (C) 2013  Renweu Gao
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -43,22 +43,6 @@ namespace u {
         template <typename T>
         DType ctype() {
             DType ret = DType::invalid;
-            // switch(typeid(T).hash_code()) {
-            //     case typeid(char).hash_code(): ret = DType::int8; break;
-            //     case typeid(unsigned char).hash_code(): ret = DType::uint8; break;
-            //     case typeid(short).hash_code(): ret = DType::int16; break;
-            //     case typeid(unsigned short).hash_code(): ret = DType::uint16; break;
-            //     case typeid(int).hash_code(): ret = DType::int32; break;
-            //     case typeid(unsigned int).hash_code(): ret = DType::uint32; break;
-            //     case typeid(long).hash_code(): ret = DType::int64; break;
-            //     case typeid(unsigned long).hash_code(): ret = DType::uint64; break;
-            //     case typeid(float).hash_code(): ret = DType::float32; break;
-            //     case typeid(double).hash_code(): ret = DType::float64; break;
-            //     default:
-            //         bool NON_SUPPORT_DTYPE = false;
-            //         u_assert(NON_SUPPORT_DTYPE, "not supported data type [supported: {u}int{8, 16, 32, 64}, float{32, 64}]");
-            // }
-
             const size_t code = typeid(T).hash_code();
             if (code == typeid(char).hash_code())
             ret = DType::int8;
