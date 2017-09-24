@@ -1,7 +1,7 @@
 GCC = g++
 INCLUDE = $(HOME)/studio/usr/include
 APP = tensor
-FLAGS = -std=c++14 -g
+FLAGS = -std=c++14 -Wall
 
 $(APP) : main.o
 	$(GCC) -o $(APP) main.o

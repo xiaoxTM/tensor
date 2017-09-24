@@ -1,8 +1,13 @@
 # C++ Tensor Library
 Tensor library is inspired by numpy and is implemented with similar API.
 
-## Workflow
+## Prerequist
 
+- [ ] libu (for logging and test)
+- [ ] gcc
+- [ ] -std > c++11
+
+## Workflow
 
 ```
 u-tensor.hpp --> u-op.hpp --> u-cpu-op.hpp
@@ -26,5 +31,5 @@ add (function) --> u::op::Add (class) --> u::op::cpu::add (function) --> u::aop:
 - [ ] gpu `CUDA` implementation
 - [ ] indexing
 
-## Problems:
+## Problems: [DONE]
 double free or collapse on virtual ~Shape

@@ -2,8 +2,8 @@
 #define __U_TENSOR_MEMORY_MANAGER_HPP__
 
 /***
-u-tensor.hpp base functions for libu
-Copyright (C) 2013  Renweu Gao
+u-mm.hpp base functions for tensor
+Copyright (C) 2017 Renweu Gao
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,30 +29,6 @@ namespace u {
     namespace tensor {
         namespace mm {
             #ifdef USE_CUDA
-            // cuda implementation if variable
-
-            inline unsigned char *malloc(size_t size, unsigned int bytes, int init=0) {
-                return gpu::malloc(size, bytes, init);
-            }
-
-            inline void mfree(unsigned char *mem) {
-                gpu::mfree(mem);
-            }
-
-            inline void no_free(unsigned char *mem) {}
-
-            template <typename T>
-            inline T *download(const unsigned char * const data, size_t size) {
-                return reinterpret_cast<T*>(gpu::download(data, size));
-            }
-
-            inline unsigned char *download(const unsigned char * const data, size_t size) {
-                return gpu::download(data, size);
-            }
-
-            inline void upload(unsigned char * const dst, const unsigned char * const src, size_t size) {
-                gpu::upload(dst, src, size);
-            }
 
             #else
             // cpu implementation otherwise

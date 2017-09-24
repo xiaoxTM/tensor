@@ -1,12 +1,29 @@
 #ifndef __U_TENSOR_SHAPE_HPP__
 #define __U_TENSOR_SHAPE_HPP__
 
+/***
+u-shape.hpp base functions for tensor
+Copyright (C) 2017  Renweu Gao
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+***/
+
 #include <vector>
 #include <tuple>
 #include <algorithm>
 
 #include "u-dtype.hpp"
-#include <initializer_list>
 
 namespace u {
     namespace tensor {
@@ -116,8 +133,10 @@ namespace u {
         public:
             virtual ~Shape(){}
             Shape(){};
-            Shape(size_t rank) : std::vector<size_t>(rank) {}
-            Shape(size_t rank, size_t value) : std::vector<size_t>(rank, value) {}
+            // to avoid ambigous when shape is 1D or 2D with Shape(const std::vector<size_t> &shape)
+            // by using initializer_list feature, we change the following construct to `create` factory
+            // Shape(size_t rank) : std::vector<size_t>(rank) {}
+            // Shape(size_t rank, const size_t &value, bool=true) : std::vector<size_t>(rank, value) {}
             Shape(const std::vector<size_t> &shape) : std::vector<size_t>(shape) {}
             Shape(const Shape &shape) {
                 u_fun_enter(0, 0);
@@ -126,39 +145,51 @@ namespace u {
                 u_fun_exit(0, 0);
             }
 
+            static Shape create(size_t rank, size_t value=0) {
+                Shape ans;
+                ans.assign(rank, value);
+                return ans;
+            }
+
             Shape operator =(const Shape &shape) {
                 u_fun_enter(0, 0);
                 resize(shape.rank());
                 assign(shape.begin(), shape.end());
-                u_fun_enter(0, 0);
+                u_fun_exit(0, 0);
                 return *this;
             }
 
             bool operator == (const Shape &shape) {
                 u_fun_enter(0, 0);
-                u_assert(this->rank() == shape.rank(), u::format("cannot compare shapes with different rank. (%zu vs %zu)", this->rank(), shape.rank()));
                 bool same = true;
-                for(size_t i=0; i<shape.rank(); ++i) {
-                    if ((*this)[i] != shape[i]) {
-                        same = false;
-                        break;
+                if (rank() != shape.rank()) {
+                    same = false;
+                } else {
+                    for(size_t i=0; i<shape.rank(); ++i) {
+                        if ((*this)[i] != shape[i]) {
+                            same = false;
+                            break;
+                        }
                     }
                 }
-                u_fun_enter(0, 0);
+                u_fun_exit(0, 0);
                 return same;
             }
 
             bool operator != (const Shape &shape) {
                 u_fun_enter(0, 0);
-                u_assert(this->rank() == shape.rank(), u::format("cannot compare shapes with different rank. (%zu vs %zu)", this->rank(), shape.rank()));
                 bool diff = false;
-                for(size_t i=0; i<shape.rank(); ++i) {
-                    if ((*this)[i] != shape[i]) {
-                        diff = true;
-                        break;
+                if (rank() != shape.rank()) {
+                    diff = true;
+                } else {
+                    for(size_t i=0; i<shape.rank(); ++i) {
+                        if ((*this)[i] != shape[i]) {
+                            diff = true;
+                            break;
+                        }
                     }
                 }
-                u_fun_enter(0, 0);
+                u_fun_exit(0, 0);
                 return diff;
             }
 
@@ -172,28 +203,24 @@ namespace u {
                     }
                 }
                 os << "}" << std::flush;
-                u_fun_enter(0, 0);
+                u_fun_exit(0, 0);
                 return os;
             }
 
-            std::string str() {
+            std::string str() const {
                 u_fun_enter(0, 0);
                 std::ostringstream oss;
                 oss << *this;
-                u_fun_enter(0, 0);
+                u_fun_exit(0, 0);
                 return oss.str();
             }
 
-            const std::string str() const {
-                u_fun_enter(0, 0);
-                std::ostringstream oss;
-                oss << *this;
-                u_fun_enter(0, 0);
-                return oss.str();
+            std::string c_str() const {
+                return str().c_str();
             }
 
             template <typename T=size_t>
-            T volume(int beg=0, int end=-1) {
+            T volume(int beg=0, int end=-1, bool inc_beg=true, bool inc_end=true) const {
                 u_fun_enter(0, 0);
                 // product of elements from beg to end.
                 // NOTE include axes both `beg` and `end`
@@ -201,59 +228,77 @@ namespace u {
                 if (size() > 0) {
                     unsigned int end_ = axis_normalize(end);
                     unsigned int beg_ = axis_normalize(beg);
-                    u_assert(beg_ <= end_, u::format("begin point must be greater than end point (%zu [%d] vs %zu [%d])", beg_, beg, end_, end));
+                    if (!inc_beg) ++ beg_;
+                    if (!inc_end) -- end_;
+                    u_assert(beg_ <= end_, u::format("begin point must be greater than end point (%zu[%d] vs %zu[%d])", beg_, beg, end_, end));
                     // NOTE for scalar, though size() == 0, 1 should be returned
                     for(size_t i=beg_; i<=end_; ++i) {
                         ret *= static_cast<T>((*this)[i]);
                     }
                 }
-                u_fun_enter(0, 0);
+                u_fun_exit(0, 0);
                 return ret;
             }
 
-            template <typename T=size_t>
-            const T volume(int beg=0, int end=-1) const {
+            inline size_t rank() const {return size();}
+
+            int next_axis(int begin, const Shape &shape, bool same=true) const {
                 u_fun_enter(0, 0);
-                T ret = 1;
-                if (size() > 0) {
-                    unsigned int end_ = axis_normalize(end);
-                    unsigned int beg_ = axis_normalize(beg);
-                    u_assert(beg_ <= end_, u::format("begin point must be greater than end point (%zu [%d] vs %zu [%d])", beg_, beg, end_, end));
-                    // NOTE for scalar, though size() == 0, 1 should be returned
-                    for(size_t i=beg_; i<=end_; ++i) {
-                        ret *= static_cast<T>((*this)[i]);
+                u_assert(this->rank() == shape.rank(), u::format("`this` and `shape` must have rank. given (%zu vs %zu)", this->rank(), shape.rank()));
+                int axis = -1;
+                if (same) {
+                    for (int i = begin; i >= 0; --i) {
+                        if ((*this)[i] == shape[i]) {
+                            axis = i;
+                            break;
+                        }
+                    }
+                } else {
+                    for (int i = begin; i >= 0; --i) {
+                        if ((*this)[i] != shape[i]) {
+                            axis = i;
+                            break;
+                        }
                     }
                 }
-                u_fun_enter(0, 0);
-                return ret;
+                u_fun_exit(0, 0);
+                return axis;
             }
 
-            inline const size_t rank() const {return size();}
-            inline size_t rank() {return size();}
+            size_t offsetmap(const size_t num, int end=-1) const {
+                u_assert(num < volume(), u::format("num2offset num overflow (%zu vs %zu)", num, volume()));
+                size_t vol = 0;
+                size_t left = num;
+                size_t capacity = 0;
+                size_t end_axis = axis_normalize(end);
+                for (size_t i=0; i<=end_axis; ++i) {
+                    size_t v = volume(i, end);
+                    capacity = static_cast<size_t>(left / v) * v;
+                    left -= capacity;
+                    vol +=  capacity;
+                }
+                return vol;
+            }
+
+            size_t offsetmap(const Shape &shape, const size_t num, int end=-1) const {
+                u_assert(num < volume(), u::format("num2offset num overflow (%zu vs %zu)", num, volume()));
+                u_assert(shape.rank() == size(), u::format("num2offset of `shape` should have rank equal `*this`. given (%zu vs %zu)", shape.rank(), this->rank()));
+                size_t vol = 0;
+                size_t left = num;
+                size_t capacity = 0;
+                size_t end_axis = axis_normalize(end);
+                for (size_t i=0; i<=end_axis; ++i) {
+                    size_t v = volume(i, end);
+                    capacity = static_cast<size_t>(left / v);
+                    left -= (capacity * v);
+                    vol += (shape.volume(i, end) * capacity);
+                }
+                return vol;
+            }
 
             static const Shape broadcast(const Shape &s1, const Shape &s2) {return s1.broadcast(s2);}
 
-            Shape broadcast(const Shape &shape) {
-                u_fun_enter(0, 0);
-                Shape a(*this);
-                Shape b(shape);
-                if (a.rank() > b.rank()) {
-                    b.insert(b.begin(), (a.rank() - b.rank()), 1);
-                } else {
-                    a.insert(a.begin(), (b.rank() - a.rank()), 1);
-                }
-                Shape ret(a.rank(), 0);
-                for(int i=static_cast<int>(ret.rank()-1); i>=0; --i){
-                    size_t adim = a[i];
-                    size_t bdim = b[i];
-                    u_assert(adim == 1 || bdim == 1 || adim == bdim, u::format("broadcast: either both dimension euqal or one of them be 1. given {%zu, %zu}", adim, bdim));
-                    ret[i] = std::max(adim, bdim);
-                }
-                u_fun_enter(0, 0);
-                return ret;
-            }
-
-            const Shape broadcast(const Shape &shape) const {
+            Shape broadcast(const Shape &shape) const {
                 u_fun_enter(0, 0);
                 Shape ret = shape;
                 if (shape != *this) {
@@ -265,7 +310,7 @@ namespace u {
                         a.insert(a.begin(), (b.rank() - a.rank()), 1);
                     }
                     ret.resize(a.rank());
-                    for(size_t i=ret.rank()+1; i>0; --i){
+                    for(int i=static_cast<int>(ret.rank())-1; i>=0; --i){
                         size_t adim = a[i];
                         size_t bdim = b[i];
                         u_assert(adim == 1 || bdim == 1 || adim == bdim, u::format("broadcast: either both dimension euqal or one of them be 1. given {%zu, %zu}", adim, bdim));
@@ -276,24 +321,79 @@ namespace u {
                 return ret;
             }
 
-            const Shape broadcast(const std::vector<size_t> &shape) {
+            Shape broadcast(const std::vector<size_t> &shape) const {
                 return broadcast(Shape(shape));
             }
 
-            template<typename T=size_t>
-            inline size_t axis_normalize(const T axis) {return axis_normalize<T>(*this, axis);}
+            /**
+             ** whether shape_ and shape is broadcast compabitiable
+             ** if particial is true
+             **    whether shape can be broadcast to shape_
+            */
+            bool broadcastable(const Shape &shape, bool particial=false) const {
+                u_fun_enter(0, 0);
+                bool ans = true;
+                if (shape != *this) {
+                    Shape a(*this);
+                    Shape b(shape);
+                    if (a.rank() > b.rank()) {
+                        b.insert(b.begin(), (a.rank() - b.rank()), 1);
+                    } else if (a.rank() < b.rank() && !particial) {
+                        a.insert(a.begin(), (b.rank() - a.rank()), 1);
+                    }
+                    if (particial && a.rank() < b.rank()) {
+                        ans =false;
+                    } else {
+                        for(int i=static_cast<int>(a.rank())-1; i>=0; --i){
+                            size_t adim = a[i];
+                            size_t bdim = b[i];
+                            if (adim != bdim && adim != 1 && bdim != 1 ) {
+                                ans = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                u_fun_enter(0, 0);
+                return ans;
+            }
+            //
+            // bool broadcastable(const std::vector<size_t> &shape, bool particial=false) {
+            //     u_fun_enter(0, 0);
+            //     Shape _shape_(shape);
+            //     bool ans = broadcastable(_shape_, particial);
+            //     u_fun_enter(0, 0);
+            //     return ans;
+            // }
+            //
+            static std::tuple<Shape, Shape, Shape> adapt_shape(const Shape &shape1, const Shape &shape2) {
+                u_fun_enter(0, 0);
+                Shape ret = shape1;
+                Shape a(shape1);
+                Shape b(shape2);
+                if (shape1 != shape2) {
+                    if (a.rank() > b.rank()) {
+                        b.insert(b.begin(), (a.rank() - b.rank()), 1);
+                    } else if (a.rank() < b.rank()) {
+                        a.insert(a.begin(), (b.rank() - a.rank()), 1);
+                    }
+                    ret.resize(a.rank());
+                    for(int i=static_cast<int>(ret.rank())-1; i>=0; --i){
+                        size_t adim = a[i];
+                        size_t bdim = b[i];
+                        u_assert(adim == 1 || bdim == 1 || adim == bdim, u::format("broadcast: either both dimension euqal or one of them be 1. given {%zu, %zu}", adim, bdim));
+                        ret[i] = std::max(adim, bdim);
+                    }
+                }
+                u_fun_enter(0, 0);
+                return std::make_tuple(ret, a, b);
+            }
 
-            template<typename T=size_t>
-            inline const size_t axis_normalize(const T axis) const {return axis_normalize<T>(*this, axis);}
+            inline size_t axis_normalize(const int axis) const {return axis_normalize(*this, axis);}
 
-            template<typename T=size_t>
-            inline std::vector<size_t> axis_normalize(const std::vector<T> &axis) {return axis_normalize<T>(*this, axis);}
+            inline std::vector<size_t> axis_normalize(const std::vector<int> &axis) const {return axis_normalize(*this, axis);}
 
-            template<typename T=size_t>
-            inline const std::vector<size_t> axis_normalize(const std::vector<T> &axis) const {return axis_normalize<T>(*this, axis);}
-
-            template<typename T=size_t>
-            static size_t axis_normalize(const Shape &shape, const T axis) {
+            static size_t axis_normalize(const Shape &shape, const int axis) {
                 // normalize axis
                 // if axis is positive, do nothing
                 // else convert it to positive by adding rank
@@ -306,24 +406,19 @@ namespace u {
             }
 
             // transform list of relative axes to absolute axes
-            template<typename T=size_t>
-            static std::vector<size_t> axis_normalize(const Shape &shape, const std::vector<T> &axis) {
+            static std::vector<size_t> axis_normalize(const Shape &shape, const std::vector<int> &axis) {
                 u_fun_enter(0, 0);
                 std::vector<size_t> ret(axis.size());
                 for (size_t idx = 0; idx < axis.size(); ++idx) {
-                    ret[idx] = axis_normalize<T>(shape, axis[idx]);
+                    ret[idx] = axis_normalize(shape, axis[idx]);
                 }
                 u_fun_exit(0, 0);
                 return (ret);
             }
 
-            inline std::tuple<size_t, size_t, size_t, size_t> split(const int axis) {return prepare_for_dimension_operation_(axis);}
+            inline std::tuple<size_t, size_t, size_t, size_t> split(const int axis) const {return prepare_for_dimension_operation_(axis);}
 
-            inline const std::tuple<size_t, size_t, size_t, size_t> split(const int axis) const {return prepare_for_dimension_operation_(axis);}
-
-            inline Shape get_shape_dimension(const int axis, bool keepdims=false) {return prepare_shape_for_dimension_operation_(axis, keepdims);}
-
-            inline const Shape get_shape_dimension(const int axis, bool keepdims=false) const {return prepare_shape_for_dimension_operation_(axis, keepdims);}
+            inline Shape get_shape_dimension(const int axis, bool keepdims=false) const {return prepare_shape_for_dimension_operation_(axis, keepdims);}
 
             inline Shape transpose(const std::vector<int> &axis) {
                 u_fun_enter(0, 0);

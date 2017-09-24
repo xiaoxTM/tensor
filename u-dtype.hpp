@@ -2,8 +2,8 @@
 #define __U_TENSOR_DATA_TYPE_HPP__
 
 /***
-u-dtype.hpp base functions for libu
-Copyright (C) 2013  Renweu Gao
+u-dtype.hpp base functions for tensor
+Copyright (C) 2017  Renweu Gao
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@ namespace u {
                 case DType::int32:  size = sizeof(int); break;
                 case DType::uint32: size = sizeof(unsigned int); break;
                 case DType::int64:  size = sizeof(long); break;
-                case DType::uint64: size = sizeof(size_t); break;
+                case DType::uint64: size = sizeof(unsigned long); break;
                 case DType::float32:size = sizeof(float); break;
                 case DType::float64:size = sizeof(double); break;
                 default: size = 0;
@@ -101,12 +101,18 @@ namespace u {
                 case DType::int32:  name = "int"; break;
                 case DType::uint32: name = "unsigned int"; break;
                 case DType::int64:  name = "long"; break;
-                case DType::uint64: name = "size_t"; break;
+                case DType::uint64: name = "unsigned long"; break;
                 case DType::float32:name = "float"; break;
                 case DType::float64:name = "double"; break;
                 default: name = "NON_SUPPORT_DTYPE";
             }
             return (name);
+        }
+
+        template <typename T>
+        bool dtype_same(DType type) {
+            DType t = ctype<T>();
+            return (t == type);
         }
 
         bool is_float(const DType type) {
@@ -123,12 +129,6 @@ namespace u {
                 ans = true;
             }
             return ans;
-        }
-
-        template <typename T>
-        bool same_type(DType type) {
-            DType t = ctype<T>();
-            return (t == type);
         }
     }
 }
