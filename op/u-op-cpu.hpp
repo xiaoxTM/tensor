@@ -745,24 +745,31 @@ namespace u {
                     if (dshape == sshape) { // just in case
                         std::copy_n(src_, dshape.volume(), dst_);
                     } else {
-                        // initialize dst_ with src_
                         int beg_axis = dshape.next_axis(static_cast<int>(dshape.rank())-1, sshape, false);
                         int end_axis = dshape.next_axis(static_cast<int>(beg_axis), sshape);
-                        size_t times = sshape.volume(0, beg_axis);
-                        size_t intra_strides = 1;
-                        if (beg_axis != static_cast<int>(sshape.rank())-1) {
-                            intra_strides = sshape.volume(beg_axis, -1, false);
-                        }
+                        { // initialize dst with src
+                            size_t times = sshape.volume(0, beg_axis);
+                            size_t intra_strides = 1;
+                            if (beg_axis != static_cast<int>(sshape.rank())-1) {
+                                intra_strides = sshape.volume(beg_axis, -1, false);
+                            }
 
-                        for (size_t t=0; t<times; ++t) {
-                            size_t begin = sshape.offsetmap(dshape, t, beg_axis) * intra_strides;
-                            std::copy_n(src_ + t * intra_strides, intra_strides, dst_ + begin);
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
+                            for (size_t t=0; t<times; ++t) {
+                                size_t begin = sshape.offsetmap(dshape, t, beg_axis) * intra_strides;
+                                std::copy_n(src_ + t * intra_strides, intra_strides, dst_ + begin);
+                            }
                         }
 
                         while (true) {
+                            #ifdef _OPENMP
+                            #pragma omp parallel for
+                            #endif
                             for (int i = beg_axis; i > end_axis; -- i) {
-                                times = sshape.volume(0, i);
-                                intra_strides = 1;
+                                size_t times = sshape.volume(0, i);
+                                size_t intra_strides = 1;
                                 if (i != static_cast<int>(dshape.rank())-1) {
                                     intra_strides = dshape.volume(i, -1, false);
                                 }
