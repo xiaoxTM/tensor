@@ -94,25 +94,13 @@ namespace u {
 
             Tensor(): data_(nullptr), shape_(), type_(DType::invalid), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {}
 
-            Tensor(DType type) : data_(nullptr), shape_(), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+            Tensor(const DType type) : data_(nullptr), shape_(), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
                 u_fun_enter(0, 0);
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 u_fun_exit(0, 0);
             }
 
-            Tensor(const Shape& shape, DType type, bool lazy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
-                u_fun_enter(0, 0);
-                u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
-                size_t v = volume();
-                u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
-                data_ = nullptr;
-                if (!lazy) {
-                    malloc();
-                }
-                u_fun_exit(0, 0);
-            }
-
-            Tensor(const std::initializer_list<size_t> &shape, DType type, bool lazy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+            Tensor(const Shape& shape, const DType type, bool lazy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
                 u_fun_enter(0, 0);
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
@@ -124,7 +112,19 @@ namespace u {
                 u_fun_exit(0, 0);
             }
 
-            Tensor(unsigned char * data, const std::vector<size_t> &shape, DType type, bool copy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+            Tensor(const std::initializer_list<size_t> &shape, const DType type, bool lazy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+                u_fun_enter(0, 0);
+                u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
+                size_t v = volume();
+                u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
+                data_ = nullptr;
+                if (!lazy) {
+                    malloc();
+                }
+                u_fun_exit(0, 0);
+            }
+
+            Tensor(unsigned char * data, const std::vector<size_t> &shape, const DType type, bool copy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
                 u_fun_enter(0, 0);
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
@@ -140,7 +140,7 @@ namespace u {
                 u_fun_exit(0, 0);
             }
 
-            Tensor(unsigned char * data, const Shape& shape, DType type, bool copy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+            Tensor(unsigned char * data, const Shape& shape, const DType type, bool copy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
                 u_fun_enter(0, 0);
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
@@ -154,7 +154,7 @@ namespace u {
                 u_fun_exit(0, 0);
             }
 
-            Tensor(const unsigned char * const data, const Shape &shape, DType type) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+            Tensor(const unsigned char * const data, const Shape &shape, const DType type) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
                 u_fun_enter(0, 0);
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
@@ -164,7 +164,7 @@ namespace u {
                 u_fun_exit(0, 0);
             }
 
-            Tensor(const unsigned char * const data, const std::vector<size_t> &shape, DType type) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+            Tensor(const unsigned char * const data, const std::vector<size_t> &shape, const DType type) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
                 u_fun_enter(0, 0);
                 u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
                 size_t v = volume();
@@ -257,10 +257,10 @@ namespace u {
                 return oss.str();
             }
 
-            int precision() {return print_precision_;}
+            int precision() const {return print_precision_;}
             void precision(int prec) {print_precision_ = prec;}
 
-            int width() {return print_width_;}
+            int width() const {return print_width_;}
             void width(int w){print_width_ = w;}
 
             void malloc(const Shape &shape, DType type) {
@@ -293,7 +293,9 @@ namespace u {
 
             const unsigned char *cref() const {return data_.get();}
 
-            unsigned char *ref() {return data_.get();}
+            unsigned char * ref() const {return data_.get();}
+
+            std::shared_ptr<unsigned char> data() const {return data_;}
 
             DType type() const {return type_;}
 
@@ -378,17 +380,32 @@ namespace u {
                 return ret;
             }
 
+            // shallow-copy
+            Tensor &operator =(const Tensor &d) {
+                type_ = d.type();
+                shape_ = d.shape();
+                data_ = d.data();
+                print_precision_ = d.precision();
+                print_width_ = d.width();
+                return (*this);
+            }
+
             // deep-copy assign assignment
-            Tensor &operator =(const Tensor& d) {
+            Tensor &operator ()(const Tensor& d) {
                 u_fun_enter(0, 0);
                 if (type_ == DType::invalid) {
                     // assign to no initialized tensor
                     type_ = d.type();
                     shape_ = d.shape();
                     _init(d.cref(), type_, d.volume());
+                    print_precision_ = d.precision();
+                    print_width_ = d.width();
                 } else {
                     u_assert(shape_.broadcastable(d.shape(), true), u::format("shape %s can not broadcast to %s", d.shape().c_str(), shape_.c_str()));
                     op::run2<Tensor, op::Assign>(*this, d.broadcast(shape_));
+                    print_precision_ = d.precision();
+                    type_ = d.type();
+                    print_width_ = d.width();
                 }
                 u_fun_exit(0, 0);
                 return (*this);
@@ -1413,6 +1430,12 @@ namespace u {
                 u_fun_exit(0, 0);
                 return ans;
             }
+            //
+            // std::vector<Tensor> split(const std::vector<int> splits, int axis) {
+            //     std::vector<const Tensor &> ntensors(tensors);
+            //     ntensors.push_back(*this);
+            //     return
+            // }
 
             Tensor tile(const std::vector<int> axis, const std::vector<size_t> &repeats) {
                 u_fun_enter(0, 0);
@@ -1477,6 +1500,31 @@ namespace u {
                 u_fun_exit(0, 0);
             }
         };
+
+        /**
+         ** TODO test concatenate
+        */
+        Tensor concatenate(const std::vector<Tensor> &tensors, int axis) {
+            u_fun_enter(0, 0);
+            Shape shape;
+            DType type = tensors[0].type();
+            { // get newshape
+                std::vector<Shape> shapes;
+                for (size_t i=0; i<tensors.size(); ++i) {
+                    shapes.push_back(tensors[i].shape());
+                    u_assert(type == tensors[i].type(), u::format("%zu-th and %zu-th have different data type. given (%s vs %s)", 0, i, dtype_cstr(type), dtype_cstr(tensors[i].type())));
+                }
+                shape = Shape::concatenate(shapes, axis);
+            }
+            Tensor ans(shape, type);
+            op::runv<Tensor, op::Concatenate>(ans, tensors, axis);
+            u_fun_exit(0, 0);
+            return ans;
+        }
+
+        // std::vector<Tensor> split(const Tensor &tensor, const std::vector<int> &splits, int axis) {
+        //
+        // }
 
         Tensor zeros(const Shape &shape, const DType type) {
             u_fun_here(0, 0);

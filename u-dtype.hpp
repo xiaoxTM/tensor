@@ -109,6 +109,10 @@ namespace u {
             return (name);
         }
 
+        const char * dtype_cstr(DType type) {
+            return dtype_str(type).c_str();
+        }
+
         template <typename T>
         bool dtype_same(DType type) {
             DType t = ctype<T>();

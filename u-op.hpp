@@ -33,6 +33,64 @@ namespace u {
     namespace tensor {
         namespace op {
 
+            /**
+             ** run multiple tensors in term of vector<Tensor>
+             ** NOTE all tensors should have same datatype
+            */
+            template<class C, template<typename > class Fun, class ...Args>
+            void runv(std::vector<C> dst, const C &src, Args &&...args) {
+                std::vector<const unsigned char*> data;
+                std::vector<Shape> shapes;
+                for (size_t i=0; i<dst.size(); ++i) {
+                    data.push_back(dst[i].ref());
+                    shapes.push_back(dst[i].shape());
+                }
+                switch (dst.type()) {
+                    case u::tensor::DType::int8: Fun<char>::run(data, shapes, src, src.shape(), std::forward<Args>(args)...);break;
+                    case u::tensor::DType::uint8: Fun<unsigned char>::run(data, shapes, src, src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int16: Fun<short>::run(data, shapes, src, src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint16: Fun<unsigned short>::run(data, shapes, src, src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int32: Fun<int>::run(data, shapes, src, src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint32: Fun<unsigned int>::run(data, shapes, src, src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int64: Fun<long>::run(data, shapes, src, src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint64: Fun<unsigned long>::run(data, shapes, src, src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::float32: Fun<float>::run(data, shapes, src, src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::float64: Fun<double>::run(data, shapes, src, src.shape(), std::forward<Args>(args)...); break;
+                    default:
+                    bool NON_SUPPORT_DTYPE = false;
+                    u_assert(NON_SUPPORT_DTYPE, u::format("using tensor declared without given type parameter (%s) [template T]?", dtype_str(src.type()).c_str()));
+                }
+            }
+
+            /**
+             ** run multiple tensors in term of vector<Tensor>
+             ** NOTE all tensors should have same datatype
+            */
+            template<class C, template<typename > class Fun, class ...Args>
+            void runv(C & dst, const std::vector<C> &srcs, Args &&...args) {
+                std::vector<const unsigned char*> data;
+                std::vector<Shape> shapes;
+                for (size_t i=0; i<srcs.size(); ++i) {
+                    data.push_back(srcs[i].ref());
+                    shapes.push_back(srcs[i].shape());
+                }
+                switch (dst.type()) {
+                    case u::tensor::DType::int8: Fun<char>::run(dst.ref(), dst.shape(), data, shapes, std::forward<Args>(args)...);break;
+                    case u::tensor::DType::uint8: Fun<unsigned char>::run(dst.ref(), dst.shape(), data, shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int16: Fun<short>::run(dst.ref(), dst.shape(), data, shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint16: Fun<unsigned short>::run(dst.ref(), dst.shape(), data, shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int32: Fun<int>::run(dst.ref(), dst.shape(), data, shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint32: Fun<unsigned int>::run(dst.ref(), dst.shape(), data, shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int64: Fun<long>::run(dst.ref(), dst.shape(), data, shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint64: Fun<unsigned long>::run(dst.ref(), dst.shape(), data, shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::float32: Fun<float>::run(dst.ref(), dst.shape(), data, shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::float64: Fun<double>::run(dst.ref(), dst.shape(), data, shapes, std::forward<Args>(args)...); break;
+                    default:
+                    bool NON_SUPPORT_DTYPE = false;
+                    u_assert(NON_SUPPORT_DTYPE, u::format("using tensor declared without given type parameter (%s) [template T]?", dtype_str(dst.type()).c_str()));
+                }
+            }
+
             template<class C, template<typename > class Fun, class ...Args>
             void run(C &src, Args &&...args) {
                 switch (src.type()) {
@@ -193,6 +251,14 @@ namespace u {
                     // std::cout << "dshape: " << dshape << std::endl;
                     // std::cout << "sshape: " << sshape << std::endl;
                     cpu::broadcast<To, Ti>(dst, src, dshape, sshape);
+                }
+            };
+
+            template<typename T>
+            class Concatenate {
+            public:
+                static void run(unsigned char *dst, const Shape &shape, const std::vector<const unsigned char *> &srcs, const std::vector<Shape> &shapes, int axis) {
+                    cpu::concatenate<T>(dst, shape, srcs, shapes, axis);
                 }
             };
 

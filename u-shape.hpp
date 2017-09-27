@@ -265,6 +265,25 @@ namespace u {
                 return axis;
             }
 
+            /**
+             ** sub shape without axis from `axis` to `axis + num`
+            */
+            Shape esub(int axis, size_t num=1) const {
+                size_t len = size();
+                u_assert(len > 0, u::format("cannot get sub-shape for shape with size of %zu", len));
+                size_t beg_axis = axis_normalize(axis);
+                size_t end_axis = axis_normalize(axis + num);
+                u_assert(len > beg_axis && len > end_axis, u::format("axis overflow: %zu vs (%zu[%d] + %zu)", len, beg_axis, axis, num));
+                Shape shape = create(len-1);
+                int idx = -1;
+                for (size_t i=0; i<len; ++i) {
+                    if (i < beg_axis or i >= end_axis) {
+                        shape[++ idx] = (*this)[i];
+                    }
+                }
+                return shape;
+            }
+
             size_t offsetmap(const size_t num, int end=-1) const {
                 u_assert(num < volume(), u::format("num2offset num overflow (%zu vs %zu)", num, volume()));
                 size_t vol = 0;
@@ -294,6 +313,22 @@ namespace u {
                     vol += (shape.volume(i, end) * capacity);
                 }
                 return vol;
+            }
+
+            static Shape concatenate(const std::vector<Shape> &shapes, int axis) {
+                Shape shape(shapes[0]);
+                { // check shape compabitity
+                    Shape subshape = shape.esub(axis);
+                    for (size_t i=1; i<shapes.size(); ++i) {
+                        u_assert(shape.size() == shapes[i].size(), u::format("%zu-th and %zu-th shape have different rank (%zu vs %zu)", shape.rank(), shapes[i].rank()));
+                        u_assert(subshape == shapes[i].esub(axis), u::format("%zu-th shape[%s] and %zu-th shape[%s] have different axis besides %d axis", 0, subshape.c_str(), i, shapes[i].esub(axis), axis));
+                    }
+                }
+                size_t naxis = shape.axis_normalize(axis);
+                for (size_t i=1; i<shape.size(); ++i) {
+                    shape[naxis] += shapes[i][naxis];
+                }
+                return shape;
             }
 
             static const Shape broadcast(const Shape &s1, const Shape &s2) {return s1.broadcast(s2);}
@@ -357,15 +392,7 @@ namespace u {
                 u_fun_enter(0, 0);
                 return ans;
             }
-            //
-            // bool broadcastable(const std::vector<size_t> &shape, bool particial=false) {
-            //     u_fun_enter(0, 0);
-            //     Shape _shape_(shape);
-            //     bool ans = broadcastable(_shape_, particial);
-            //     u_fun_enter(0, 0);
-            //     return ans;
-            // }
-            //
+
             static std::tuple<Shape, Shape, Shape> adapt_shape(const Shape &shape1, const Shape &shape2) {
                 u_fun_enter(0, 0);
                 Shape ret = shape1;
