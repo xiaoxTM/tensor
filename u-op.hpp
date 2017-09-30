@@ -33,6 +33,62 @@ namespace u {
     namespace tensor {
         namespace op {
 
+            /**
+             ** run multiple tensors in term of vector<Tensor>
+             ** NOTE all tensors should have same datatype
+            */
+            template<class C, template<typename > class Fun, class ...Args>
+            void runv(std::vector<C> &dst, const C &src, Args &&...args) {
+                std::vector<unsigned char*> data;
+                for (size_t i=0; i<dst.size(); ++i) {
+                    data.push_back(dst[i].ref());
+                }
+                switch (src.type()) {
+                    case u::tensor::DType::int8: Fun<char>::run(data, src.cref(), src.shape(), std::forward<Args>(args)...);break;
+                    case u::tensor::DType::uint8: Fun<unsigned char>::run(data, src.cref(), src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int16: Fun<short>::run(data, src.cref(), src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint16: Fun<unsigned short>::run(data, src.cref(), src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int32: Fun<int>::run(data, src.cref(), src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint32: Fun<unsigned int>::run(data, src.cref(), src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int64: Fun<long>::run(data, src.cref(), src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint64: Fun<unsigned long>::run(data, src.cref(), src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::float32: Fun<float>::run(data, src.cref(), src.shape(), std::forward<Args>(args)...); break;
+                    case u::tensor::DType::float64: Fun<double>::run(data, src.cref(), src.shape(), std::forward<Args>(args)...); break;
+                    default:
+                    bool NON_SUPPORT_DTYPE = false;
+                    u_assert(NON_SUPPORT_DTYPE, u::format("using tensor declared without given type parameter (%s) [template T]?", dtype_str(src.type()).c_str()));
+                }
+            }
+
+            /**
+             ** run multiple tensors in term of vector<Tensor>
+             ** NOTE all tensors should have same datatype
+            */
+            template<class C, template<typename > class Fun, class ...Args>
+            void runv(C & dst, const std::vector<C> &srcs, Args &&...args) {
+                std::vector<const unsigned char*> data;
+                std::vector<Shape> shapes;
+                for (size_t i=0; i<srcs.size(); ++i) {
+                    data.push_back(srcs[i].ref());
+                    shapes.push_back(srcs[i].shape());
+                }
+                switch (dst.type()) {
+                    case u::tensor::DType::int8: Fun<char>::run(dst.ref(), data, dst.shape(), shapes, std::forward<Args>(args)...);break;
+                    case u::tensor::DType::uint8: Fun<unsigned char>::run(dst.ref(), data, dst.shape(), shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int16: Fun<short>::run(dst.ref(), data, dst.shape(), shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint16: Fun<unsigned short>::run(dst.ref(), data, dst.shape(), shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int32: Fun<int>::run(dst.ref(), data, dst.shape(), shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint32: Fun<unsigned int>::run(dst.ref(), data, dst.shape(), shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::int64: Fun<long>::run(dst.ref(), data, dst.shape(), shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint64: Fun<unsigned long>::run(dst.ref(), data, dst.shape(), shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::float32: Fun<float>::run(dst.ref(), data, dst.shape(), shapes, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::float64: Fun<double>::run(dst.ref(), data, dst.shape(), shapes, std::forward<Args>(args)...); break;
+                    default:
+                    bool NON_SUPPORT_DTYPE = false;
+                    u_assert(NON_SUPPORT_DTYPE, u::format("using tensor declared without given type parameter (%s) [template T]?", dtype_str(dst.type()).c_str()));
+                }
+            }
+
             template<class C, template<typename > class Fun, class ...Args>
             void run(C &src, Args &&...args) {
                 switch (src.type()) {
@@ -75,7 +131,7 @@ namespace u {
             void run2(C &dst, const C &src, Args &&...args) {
                 switch (dst.type()) {
                     case u::tensor::DType::int8: run2_<C, char, Fun, Args...>(dst, src, std::forward<Args>(args)...); break;
-                    case u::tensor::DType::uint8:	run2_<C, unsigned char, Fun, Args...>(dst, src, std::forward<Args>(args)...); break;
+                    case u::tensor::DType::uint8:    run2_<C, unsigned char, Fun, Args...>(dst, src, std::forward<Args>(args)...); break;
                     case u::tensor::DType::int16: run2_<C, short, Fun, Args...>(dst, src, std::forward<Args>(args)...); break;
                     case u::tensor::DType::uint16: run2_<C, unsigned short, Fun, Args...>(dst, src, std::forward<Args>(args)...); break;
                     case u::tensor::DType::int32: run2_<C, int, Fun, Args...>(dst, src, std::forward<Args>(args)...); break;
@@ -94,7 +150,7 @@ namespace u {
             void run3__(C &dst, const C &src1, const C &src2, Args &&...args) {
                 switch (src2.type()) {
                     case u::tensor::DType::int8: Fun<T1, T2, char>::run(dst.ref(), src1.cref(), src2.cref(), dst.shape(), src1.shape(), src2.shape(), std::forward<Args>(args)...); break;
-                    case u::tensor::DType::uint8: Fun<T1, T2, unsigned char>::run(dst.ref(), src1.cref(), src2.cref(), dst.shape(), src1.shape(), src2.shape(), std::forward<Args>(args)...);	break;
+                    case u::tensor::DType::uint8: Fun<T1, T2, unsigned char>::run(dst.ref(), src1.cref(), src2.cref(), dst.shape(), src1.shape(), src2.shape(), std::forward<Args>(args)...);    break;
                     case u::tensor::DType::int16: Fun<T1, T2, short>::run(dst.ref(), src1.cref(), src2.cref(), dst.shape(), src1.shape(), src2.shape(), std::forward<Args>(args)...); break;
                     case u::tensor::DType::uint16: Fun<T1, T2, unsigned short>::run(dst.ref(), src1.cref(), src2.cref(), dst.shape(), src1.shape(), src2.shape(), std::forward<Args>(args)...); break;
                     case u::tensor::DType::int32: Fun<T1, T2, int>::run(dst.ref(), src1.cref(), src2.cref(), dst.shape(), src1.shape(), src2.shape(), std::forward<Args>(args)...); break;
@@ -190,9 +246,23 @@ namespace u {
             class Broadcast {
             public:
                 static void run(unsigned char *dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    // std::cout << "dshape: " << dshape << std::endl;
-                    // std::cout << "sshape: " << sshape << std::endl;
                     cpu::broadcast<To, Ti>(dst, src, dshape, sshape);
+                }
+            };
+
+            template<typename T>
+            class Concatenate {
+            public:
+                static void run(unsigned char *dst, const std::vector<const unsigned char *> &srcs, const Shape &shape, const std::vector<Shape> &shapes, int axis) {
+                    cpu::concatenate<T>(dst, srcs, shape, shapes, axis);
+                }
+            };
+
+            template<typename T>
+            class Split {
+            public:
+                static void run(std::vector<unsigned char *> &dsts, const unsigned char * src, const Shape &shape, const std::vector<Shape> &shapes, size_t axis) {
+                    cpu::split<T>(dsts, src, shapes, shape, axis);
                 }
             };
 
@@ -441,9 +511,9 @@ namespace u {
             class Absolute {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     cpu::abs<To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
 
@@ -451,9 +521,9 @@ namespace u {
             class Clip {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, double min, double max) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     cpu::clip<To, Ti>(dst, src, dshape, sshape, min, max);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
 
@@ -469,9 +539,9 @@ namespace u {
             class Sum {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     cpu::sum<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
 
@@ -479,9 +549,9 @@ namespace u {
             class Mean {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     cpu::mean<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
 
@@ -489,9 +559,9 @@ namespace u {
             class StdDev {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     cpu::stddev<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
 
@@ -499,9 +569,9 @@ namespace u {
             class Max {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     cpu::max<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
 
@@ -509,9 +579,9 @@ namespace u {
             class Min {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     cpu::min<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
 
@@ -519,9 +589,9 @@ namespace u {
             class ArgMax {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     cpu::argmax<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
 
@@ -529,9 +599,9 @@ namespace u {
             class ArgMin {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     cpu::argmin<To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
 
@@ -539,7 +609,7 @@ namespace u {
             class Transpose {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, const std::vector<size_t> &dims, const std::map<size_t, size_t> &dim_map) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     u_assert(dst != nullptr && src != nullptr,"both dst and src must not be null pointer");
                     u_assert(dst != src, "transpose cannot be called with in-place mode");
                     u_assert(dim_map.size() == dshape.size(),u::format("transpose changes size not match (%zu, vs %zu)",dim_map.size(), dshape.size()));
@@ -565,7 +635,7 @@ namespace u {
                         }
                         dst_[nidx] = src_[index];
                     }
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
 
@@ -573,7 +643,7 @@ namespace u {
             class Any {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, bool positive) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     u_assert(dst != nullptr && src != nullptr,"both dst and src must not be null pointer");
                     u_assert(dst != src, "any cannot be called with in-place mode");
                     u_assert(dshape.volume() == 1, u::format("destination of tensor of `Any` operation must have volume of 1 (scalar). given %zu", dshape.volume()));
@@ -596,7 +666,7 @@ namespace u {
                             }
                         }
                     }
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
 
@@ -604,8 +674,8 @@ namespace u {
             class All {
             public:
                 static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, bool positive) {
-                    u_fun_enter(0, 0);
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
+                    u_fun_enter(2, 0);
                     u_assert(dst != nullptr && src != nullptr,"both dst and src must not be null pointer");
                     u_assert(dst != src, "any cannot be called with in-place mode");
                     u_assert(dshape.volume() == 1, u::format("destination of tensor of `All` operation must have volume of 1 (scalar). given %zu", dshape.volume()));
@@ -628,7 +698,7 @@ namespace u {
                             }
                         }
                     }
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             };
             #endif

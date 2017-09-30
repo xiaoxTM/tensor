@@ -28,7 +28,7 @@ namespace u {
     namespace tensor {
         namespace cpu {
             unsigned char *malloc(size_t size, unsigned int bytes, int init = 0) {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 unsigned char *mem = nullptr;
                 try {
                     mem = reinterpret_cast<unsigned char*>(calloc(size, bytes));
@@ -39,12 +39,12 @@ namespace u {
                     bool MALLOC_MEMORY_ERROR = false;
                     assert(MALLOC_MEMORY_ERROR);
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return mem;
             }
 
             void mfree(unsigned char * mem) {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 if (mem != nullptr) {
                     try {
                         free(mem);
@@ -54,23 +54,23 @@ namespace u {
                         assert(MFREE_MEMORY_ERROR);
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
             }
 
             unsigned char *download(const unsigned char * const data, size_t size) {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 unsigned char *mem = reinterpret_cast<unsigned char*>(malloc(size, sizeof(unsigned char)));
                 std::copy_n(data, size, mem);
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return mem;
             }
 
             void upload(unsigned char * const dst, const unsigned char * const src, size_t size) {
                 // @dst: destinate where data is uploaded
                 // @size: size in byte
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 std::copy_n(src, size, dst);
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
             }
         }
     }
