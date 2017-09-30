@@ -41,6 +41,7 @@ namespace u {
                 class Equal {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -56,6 +57,7 @@ namespace u {
                                 dst[i] = static_cast<To>(src2[i] == static_cast<T2>(src1[i]));
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -63,6 +65,7 @@ namespace u {
                 class NotEqual {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -78,6 +81,7 @@ namespace u {
                                 dst[i] = static_cast<To>(src2[i] != static_cast<T2>(src1[i]));
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -85,6 +89,7 @@ namespace u {
                 class Greater {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -100,6 +105,7 @@ namespace u {
                                 dst[i] = static_cast<To>(static_cast<T2>(src1[i]) > src2[i]);
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -107,6 +113,7 @@ namespace u {
                 class GreaterEqual {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -122,6 +129,7 @@ namespace u {
                                 dst[i] = static_cast<To>(static_cast<T2>(src1[i]) >= src2[i]);
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -129,6 +137,7 @@ namespace u {
                 class Less {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -144,6 +153,7 @@ namespace u {
                                 dst[i] = static_cast<To>(static_cast<T2>(src1[i]) < src2[i]);
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -151,6 +161,7 @@ namespace u {
                 class LessEqual {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -166,6 +177,7 @@ namespace u {
                                 dst[i] = static_cast<To>(static_cast<T2>(src1[i]) <= src2[i]);
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -173,6 +185,7 @@ namespace u {
                 class Add {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -188,6 +201,7 @@ namespace u {
                                 dst[i] = static_cast<To>(static_cast<T2>(src1[i]) + src2[i]);
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -195,6 +209,7 @@ namespace u {
                 class Subtract {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -210,6 +225,7 @@ namespace u {
                                 dst[i] = static_cast<To>(static_cast<T2>(src1[i]) - src2[i]);
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -217,6 +233,7 @@ namespace u {
                 class Multiply {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -232,6 +249,7 @@ namespace u {
                                 dst[i] = static_cast<To>(src2[i] * static_cast<T2>(src1[i]));
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -239,6 +257,7 @@ namespace u {
                 class Divide {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -254,6 +273,7 @@ namespace u {
                                 dst[i] = static_cast<To>(static_cast<T2>(src1[i]) / src2[i]);
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -261,6 +281,7 @@ namespace u {
                 class Mod {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -276,6 +297,7 @@ namespace u {
                                 dst[i] = static_cast<To>(src2[i] % static_cast<T2>(src1[i]));
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -283,6 +305,7 @@ namespace u {
                 class Pow {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -298,6 +321,7 @@ namespace u {
                                 dst[i] = static_cast<To>(std::pow(src2[i], static_cast<T2>(src1[i])));
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -305,6 +329,7 @@ namespace u {
                 class Maximum {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -320,6 +345,7 @@ namespace u {
                                 dst[i] = static_cast<To>(std::max(src2[i], static_cast<T2>(src1[i])));
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -327,6 +353,7 @@ namespace u {
                 class Minimum {
                 public:
                     static void run(To *dst, const T1 *src1, const T2 *src2, size_t size) {
+                        u_fun_enter(2, 0);
                         if (std::numeric_limits<T1>::max() > std::numeric_limits<T2>::max()) {
                             #ifdef _OPENMP
                             #pragma omp parallel for
@@ -342,6 +369,7 @@ namespace u {
                                 dst[i] = static_cast<To>(std::min(src2[i], static_cast<T2>(src1[i])));
                             }
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -350,12 +378,14 @@ namespace u {
                 class Log {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::log(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -363,12 +393,14 @@ namespace u {
                 class Log10 {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::log10(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -376,12 +408,14 @@ namespace u {
                 class Experiential {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::exp(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -389,12 +423,14 @@ namespace u {
                 class SquareRoot {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::sqrt(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -402,12 +438,14 @@ namespace u {
                 class Sine {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::sin(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -415,12 +453,14 @@ namespace u {
                 class Cosine {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::cos(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -428,12 +468,14 @@ namespace u {
                 class Tangent {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::tan(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -441,12 +483,14 @@ namespace u {
                 class HyperbolicTangent {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::tanh(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -454,12 +498,14 @@ namespace u {
                 class Round {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::round(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -467,12 +513,14 @@ namespace u {
                 class Ceil {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::ceil(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -480,12 +528,14 @@ namespace u {
                 class Floor {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::floor(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -493,12 +543,14 @@ namespace u {
                 class IsInfinite {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::isinf(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -506,12 +558,14 @@ namespace u {
                 class IsNaN {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::isnan(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -519,12 +573,14 @@ namespace u {
                 class IsFinite {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::isfinite(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -532,12 +588,14 @@ namespace u {
                 class Invert {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(1.0 / src[i]);
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -545,6 +603,7 @@ namespace u {
                 class Minus {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         DType dtype = ctype<To>();
                         u_assert(dtype != DType::uint8 && dtype != DType::uint16 && dtype != DType::uint32 && dtype != DType::uint64, "cannot do minus on unsigned type, because it may cause overflow");
                         DType stype = ctype<Ti>();
@@ -555,6 +614,7 @@ namespace u {
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(-src[i]);
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -562,12 +622,14 @@ namespace u {
                 class Clip {
                 public:
                     static void run(To *dst, const Ti *src, size_t size, double min, double max) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::min(std::max(src[i], static_cast<Ti>(min)), static_cast<Ti>(max)));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -575,12 +637,14 @@ namespace u {
                 class Absolute {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(std::abs(src[i]));
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -588,12 +652,14 @@ namespace u {
                 class Assign {
                 public:
                     static void run(To *dst, const Ti *src, size_t size) {
+                        u_fun_enter(2, 0);
                         #ifdef _OPENMP
                         #pragma omp parallel for
                         #endif
                         for (size_t i = 0; i < size; ++i) {
                             dst[i] = static_cast<To>(src[i]);
                         }
+                        u_fun_exit(0, -2);
                     }
                 };
 
@@ -601,12 +667,12 @@ namespace u {
                 class Sum {
                 public:
                     static To run(const Ti * const src, unsigned int dim_size, size_t prev, size_t later, size_t inner, size_t offset) {
-                        u_fun_enter(0, 0);
+                        u_fun_enter(2, 0);
                         To sum = 0;
                         for (size_t d = 0; d < dim_size; ++d) {
                             sum += src[prev * later + d * offset + inner];
                         }
-                        u_fun_exit(0, 0);
+                        u_fun_exit(0, -2);
                         return (sum);
                     }
                 };
@@ -615,12 +681,12 @@ namespace u {
                 class Mean {
                 public:
                     static To run(const Ti * const src, unsigned int dim_size, size_t prev, size_t later, size_t inner, size_t offset) {
-                        u_fun_enter(0, 0);
+                        u_fun_enter(2, 0);
                         double sum = 0;
                         for (size_t d = 0; d < dim_size; ++d) {
                             sum += src[prev * later + d * offset + inner];
                         }
-                        u_fun_exit(0, 0);
+                        u_fun_exit(0, -2);
                         return (static_cast<To>(sum / dim_size));
                     }
                 };
@@ -629,7 +695,7 @@ namespace u {
                 class StdDev {
                 public:
                     static To run(const Ti * const src, unsigned int dim_size, size_t prev, size_t later, size_t inner, size_t offset) {
-                        u_fun_enter(0, 0);
+                        u_fun_enter(2, 0);
                         double sum = 0;
                         for (size_t d = 0; d < dim_size; ++d) {
                             sum += src[prev * later + d * offset + inner];
@@ -639,7 +705,7 @@ namespace u {
                         for (size_t d = 0; d < dim_size; ++d) {
                             sum += std::pow(src[prev * later + d * offset + inner] - mean, 2);
                         }
-                        u_fun_exit(0, 0);
+                        u_fun_exit(0, -2);
                         return (static_cast<To>(std::sqrt(sum / dim_size)));
                     }
                 };
@@ -648,7 +714,7 @@ namespace u {
                 class Max {
                 public:
                     static To run(const Ti * const src, unsigned int dim_size, size_t prev, size_t later, size_t inner, size_t offset) {
-                        u_fun_enter(0, 0);
+                        u_fun_enter(2, 0);
                         Ti max = std::numeric_limits<Ti>::min();
                         Ti cnt = std::numeric_limits<Ti>::max();
                         for (size_t d = 0; d < dim_size; ++d) {
@@ -657,7 +723,7 @@ namespace u {
                                 max = cnt;
                             }
                         }
-                        u_fun_exit(0, 0);
+                        u_fun_exit(0, -2);
                         return (static_cast<To>(max));
                     }
                 };
@@ -666,7 +732,7 @@ namespace u {
                 class Min {
                 public:
                     static To run(const Ti * const src, unsigned int dim_size, size_t prev, size_t later, size_t inner, size_t offset) {
-                        u_fun_enter(0, 0);
+                        u_fun_enter(2, 0);
                         Ti min = std::numeric_limits<Ti>::max();
                         Ti cnt = std::numeric_limits<Ti>::min();
                         for (unsigned int d = 0; d < dim_size; ++d) {
@@ -675,7 +741,7 @@ namespace u {
                                 min = cnt;
                             }
                         }
-                        u_fun_exit(0, 0);
+                        u_fun_exit(0, -2);
                         return (static_cast<To>(min));
                     }
                 };
@@ -684,7 +750,7 @@ namespace u {
                 class ArgMax {
                 public:
                     static To run(const Ti * const src, unsigned int dim_size, size_t prev, size_t later, size_t inner, size_t offset) {
-                        u_fun_enter(0, 0);
+                        u_fun_enter(2, 0);
                         Ti max = std::numeric_limits<Ti>::min();
                         Ti cnt = std::numeric_limits<Ti>::max();
                         To index = static_cast<To>(0);
@@ -695,7 +761,7 @@ namespace u {
                                 index = static_cast<To>(d);
                             }
                         }
-                        u_fun_exit(0, 0);
+                        u_fun_exit(0, -2);
                         return (index);
                     }
                 };
@@ -704,7 +770,7 @@ namespace u {
                 class ArgMin {
                 public:
                     static To run(const Ti * const src, unsigned int dim_size, size_t prev, size_t later, size_t inner, size_t offset) {
-                        u_fun_enter(0, 0);
+                        u_fun_enter(2, 0);
                         Ti min = std::numeric_limits<Ti>::max();
                         Ti cnt = std::numeric_limits<Ti>::min();
                         To index = static_cast<To>(0);
@@ -715,7 +781,7 @@ namespace u {
                                 index = static_cast<To>(d);
                             }
                         }
-                        u_fun_exit(0, 0);
+                        u_fun_exit(0, -2);
                         return (index);
                     }
                 };
@@ -738,7 +804,7 @@ namespace u {
                 */
                 template<typename To, typename Ti>
                 void broadcast(unsigned char *dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     u_assert(dshape.rank() == sshape.rank(), u::format("broadcast two tensor should have same rank. given (%zu vs %zu)", dshape.rank(), sshape.rank()));
                     To *dst_ = reinterpret_cast<To *>(dst);
                     const Ti * const src_ = reinterpret_cast<const Ti * const>(src);
@@ -746,13 +812,16 @@ namespace u {
                         std::copy_n(src_, dshape.volume(), dst_);
                     } else {
                         int beg_axis = dshape.next_axis(static_cast<int>(dshape.rank())-1, sshape, false);
-                        int end_axis = dshape.next_axis(static_cast<int>(beg_axis), sshape);
                         // initialize dst with src
-                        size_t times = sshape.volume(0, beg_axis);
+                        size_t times = sshape[beg_axis];
+                        if (beg_axis != 0) {
+                            times = sshape.volume(0, beg_axis, true, false);
+                        }
                         size_t intra_strides = 1;
                         if (beg_axis != static_cast<int>(sshape.rank())-1) {
-                            intra_strides = sshape.volume(beg_axis, -1, false);
+                            intra_strides = sshape.volume(beg_axis, -1);
                         }
+
 
                         #ifdef _OPENMP
                         #pragma omp parallel for
@@ -762,13 +831,20 @@ namespace u {
                             std::copy_n(src_ + t * intra_strides, intra_strides, dst_ + begin);
                         }
 
+                        int end_axis = dshape.next_axis(static_cast<int>(beg_axis), sshape);
+                        std::cout << "beg_axis: " << beg_axis << "; end_axis: " << end_axis << "; times: " << times << "; intra_strides: " << intra_strides << std::endl;
+
                         while (true) {
                             for (int i = beg_axis; i > end_axis; -- i) {
-                                times = sshape.volume(0, i);
+                                times = dshape[i];
+                                if (i != 0) {
+                                    times = sshape.volume(0, i, true, false);
+                                }
                                 intra_strides = 1;
                                 if (i != static_cast<int>(dshape.rank())-1) {
                                     intra_strides = dshape.volume(i, -1, false);
                                 }
+
                                 size_t repeats = static_cast<int>(dshape[i] / sshape[i]);
 
                                 #ifdef _OPENMP
@@ -788,32 +864,60 @@ namespace u {
                             end_axis = dshape.next_axis(beg_axis, sshape);
                         }
                     }
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename T>
-                void concatenate(unsigned char * dst, const Shape &shape, const std::vector<const unsigned char *> &srcs, const std::vector<Shape> &shapes, int axis) {
-                    // T *dst_ = reinterpret_cast<T*>(dst);
-                    // size_t naxis = shape.axis_normalize(axis);
-                    // std::vector<size_t> offsets(shapes.size());
-                    // for (size_t s=0; s<srcs.size(); ++s) {
-                    //     offsets[s] = shapes[s].volume(naxis, -1);
-                    // }
-                    // size_t offset = shape.volume(naxis, -1);
-                    // size_t times = shape.volume(0, axis, true, false);
-                    // for (size_t t=0; t<times; ++t) {
-                    //     size_t begin = t * offset;
-                    //     for (size_t s=0; s<srcs.size(); ++s) {
-                    //         std::copy_n(dst_ + begin, offsets[s], reinterpret_cast<const T* const>(srcs[s]) + (t * offsets[s]));
-                    //         begin += offsets[s];
-                    //     }
-                    // }
+                void concatenate(unsigned char * dst, const std::vector<const unsigned char *> &srcs, const Shape &shape, const std::vector<Shape> &shapes, int axis) {
+                    u_fun_enter(2, 0);
+                    T *dst_ = reinterpret_cast<T*>(dst);
+                    size_t naxis = shape.axis_normalize(axis);
+                    std::vector<size_t> offsets(shapes.size());
+                    for (size_t s=0; s<srcs.size(); ++s) {
+                        offsets[s] = shapes[s].volume(naxis, -1);
+                    }
+                    size_t offset = shape.volume(naxis, -1);
+                    size_t times = 1;
+                    if (naxis != 0) {
+                        times = shape.volume(0, naxis, true, false);
+                    }
+                    for (size_t t=0; t<times; ++t) {
+                        size_t begin = t * offset;
+                        for (size_t s=0; s<srcs.size(); ++s) {
+                            std::copy_n(reinterpret_cast<const T*>(srcs[s]) + (t * offsets[s]), offsets[s], dst_ + begin);
+                            begin += offsets[s];
+                        }
+                    }
+                    u_fun_exit(0, -2);
+                }
+
+                template<typename T>
+                void split(std::vector<unsigned char *> &dsts, const unsigned char *src, const std::vector<Shape> &shapes, const Shape &shape, size_t axis) {
+                    u_fun_enter(2, 0);
+                    const T *src_ = reinterpret_cast<const T*>(src);
+                    std::vector<size_t> offsets(shapes.size());
+                    for (size_t s=0; s<dsts.size(); ++s) {
+                        offsets[s] = shapes[s].volume(axis, -1);
+                    }
+                    size_t offset = shape.volume(axis, -1);
+                    size_t times = 1;
+                    if (axis != 0) {
+                        times = shape.volume(0, axis, true, false);
+                    }
+                    for (size_t t=0; t<times; ++t) {
+                        size_t begin = t * offset;
+                        for (size_t s=0; s<dsts.size(); ++s) {
+                            std::copy_n(src_ + begin, offsets[s], reinterpret_cast<T*>(dsts[s]) + (t * offsets[s]));
+                            begin += offsets[s];
+                        }
+                    }
+                    u_fun_exit(0, -2);
                 }
 
                 template<template<typename, typename > class ops, typename To, typename Ti, class ...Args>
                 void unitary_op_run(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape, Args &&...args) {
                     // element wise operation
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     u_assert(dst != nullptr && src != nullptr, "both dst and src must not be null pointer");
                     size_t dvolume = dshape.volume();
                     size_t svolume = sshape.volume();
@@ -822,12 +926,12 @@ namespace u {
                     const Ti *_src_ = reinterpret_cast<const Ti *>(src);
                     To *_dst_ = reinterpret_cast<To *>(dst);
                     ops<To, Ti>::run(_dst_, _src_, dvolume, std::forward<Args>(args)...);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<template<typename, typename, typename > class ops, typename To, typename T1, typename T2, class ...Args>
                 void binary_op_run(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2, Args &&...args) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     assert(dst != nullptr && src1 != nullptr && src2 != nullptr);
                     auto shapes = Shape::adapt_shape(sshape1, sshape2);
                     u_assert(std::get<0>(shapes) == dshape, u::format("dshape [%s] not match broadcasted shape [%s]", dshape.c_str(), std::get<0>(shapes).c_str()));
@@ -860,7 +964,7 @@ namespace u {
                     }
                     #endif
                     ops<To, T1, T2>::run(reinterpret_cast<To*>(dst), reinterpret_cast<const T1* const>(broadcasted_src1.get()), reinterpret_cast<const T2* const>(broadcasted_src2.get()), dshape.volume());
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<template<typename, typename > class ops, typename To, typename Ti, class ...Args>
@@ -889,7 +993,7 @@ namespace u {
                     //    for ofs in range(offset):
                     //        result(prev, ofs) = op([for dim in range(dim_size)])
                     // operation is done in dim_size damon (which is a OP class)
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     u_assert(dst != nullptr && src != nullptr, "both dst and src must not be null pointer");
                     const Ti * const src_ = reinterpret_cast<const Ti * const >(src);
                     To * const dst_ = reinterpret_cast<To * const >(dst);
@@ -907,287 +1011,287 @@ namespace u {
                             dst_[outer_offset + inner] = ops<To, Ti>::run(src_, dim_size, prev, later, inner, offset, std::forward<Args>(args)...);
                         }
                     }
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void add(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::Add, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void subtract(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::Subtract, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void multiply(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::Multiply, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void divide(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::Divide, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void pow(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::Pow, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void max(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::Maximum, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void min(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::Minimum, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void mod(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::Mod, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void equal(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::Equal, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void nequal(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::NotEqual, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void greater(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::Greater, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void gequal(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::GreaterEqual, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void less(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::Less, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename T1, typename T2>
                 inline void lequal(unsigned char * const dst, const unsigned char * const src1, const unsigned char * const src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     binary_op_run<aop::LessEqual, To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void log(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Log, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void log10(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Log10, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void sqrt(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::SquareRoot, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void sin(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Sine, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void cos(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Cosine, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void tan(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Tangent, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void tanh(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::HyperbolicTangent, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void round(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Round, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void ceil(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Ceil, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void floor(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Floor, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void isinf(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::IsInfinite, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void isnan(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::IsNaN, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void isfinite(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::IsFinite, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void exp(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Experiential, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void invert(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Invert, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void minus(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Minus, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void clip(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape, double min, double max) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Clip, To, Ti>(dst, src, dshape, sshape, min, max);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void abs(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Absolute, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void assign(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     unitary_op_run<aop::Assign, To, Ti>(dst, src, dshape, sshape);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void sum(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     dimension_op_run<aop::Sum, To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void mean(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     dimension_op_run<aop::Mean, To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void stddev(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     dimension_op_run<aop::StdDev, To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void max(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     dimension_op_run<aop::Max, To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void min(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     dimension_op_run<aop::Min, To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void argmax(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     dimension_op_run<aop::ArgMax, To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
 
                 template<typename To, typename Ti>
                 inline void argmin(unsigned char * const dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape, int axis) {
-                    u_fun_enter(0, 0);
+                    u_fun_enter(2, 0);
                     dimension_op_run<aop::ArgMin, To, Ti>(dst, src, dshape, sshape, axis);
-                    u_fun_exit(0, 0);
+                    u_fun_exit(0, -2);
                 }
             }
         }

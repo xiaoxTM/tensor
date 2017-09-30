@@ -39,7 +39,7 @@ namespace u {
                 //          laters represents the product of all axes after axis (include axis)
                 //          offset represents the product of all axes after axis (exclude axis)
 
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 size_t dim_size = volume();
                 size_t previous = 1;
                 size_t laters = 1;
@@ -55,13 +55,13 @@ namespace u {
                         previous = volume(0, _axis-1);
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return std::make_tuple(dim_size, previous, laters, offset);
             }
 
             const std::tuple<size_t, size_t, size_t, size_t> prepare_for_dimension_operation_(const int axis) const {
                 // see @std::tuple<size_t, size_t, size_t, size_t> prepare_for_dimension_operation_(const int axis)
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 size_t dim_size = volume();
                 size_t previous = 1;
                 size_t laters = 1;
@@ -77,7 +77,7 @@ namespace u {
                         previous = volume(0, _axis-1);
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return std::make_tuple(dim_size, previous, laters, offset);
             }
 
@@ -86,7 +86,7 @@ namespace u {
                 // for example, we have shape = {3, 4, 8, 9, 10} and axis = 2 or axis = -3
                 // return {3, 4, 9, 10} if keepdims is false
                 // reurn {3, 4, 1, 9, 10} if keepdims is true
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 Shape ret(*this);
                 if (axis == u::tensor::all) {
                     if (keepdims) {
@@ -103,13 +103,13 @@ namespace u {
                         ret.erase(ret.begin()+_axis);
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return ret;
             }
 
             const Shape prepare_shape_for_dimension_operation_(const int axis, bool keepdims=false) const {
                 // see @Shape prepare_shape_for_dimension_operation_(const int axis, bool keepdims=false)
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 Shape ret(*this);
                 if (axis == u::tensor::all) {
                     if (keepdims) {
@@ -126,7 +126,7 @@ namespace u {
                         ret.erase(ret.begin()+_axis);
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return ret;
             }
 
@@ -139,10 +139,10 @@ namespace u {
             // Shape(size_t rank, const size_t &value, bool=true) : std::vector<size_t>(rank, value) {}
             Shape(const std::vector<size_t> &shape) : std::vector<size_t>(shape) {}
             Shape(const Shape &shape) {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 resize(shape.rank());
                 assign(shape.begin(), shape.end());
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
             }
 
             static Shape create(size_t rank, size_t value=0) {
@@ -152,15 +152,15 @@ namespace u {
             }
 
             Shape operator =(const Shape &shape) {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 resize(shape.rank());
                 assign(shape.begin(), shape.end());
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return *this;
             }
 
-            bool operator == (const Shape &shape) {
-                u_fun_enter(0, 0);
+            bool operator == (const Shape &shape) const {
+                u_fun_enter(2, 0);
                 bool same = true;
                 if (rank() != shape.rank()) {
                     same = false;
@@ -172,12 +172,12 @@ namespace u {
                         }
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return same;
             }
 
-            bool operator != (const Shape &shape) {
-                u_fun_enter(0, 0);
+            bool operator != (const Shape &shape) const {
+                u_fun_enter(2, 0);
                 bool diff = false;
                 if (rank() != shape.rank()) {
                     diff = true;
@@ -189,12 +189,12 @@ namespace u {
                         }
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return diff;
             }
 
             friend std::ostream & operator <<(std::ostream &os, const Shape &shape) {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 os << "{";
                 for (size_t i=0; i<shape.rank(); ++i) {
                     os << shape[i];
@@ -203,15 +203,15 @@ namespace u {
                     }
                 }
                 os << "}" << std::flush;
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return os;
             }
 
             std::string str() const {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 std::ostringstream oss;
                 oss << *this;
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return oss.str();
             }
 
@@ -221,7 +221,7 @@ namespace u {
 
             template <typename T=size_t>
             T volume(int beg=0, int end=-1, bool inc_beg=true, bool inc_end=true) const {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 // product of elements from beg to end.
                 // NOTE include axes both `beg` and `end`
                 T ret = 1;
@@ -236,14 +236,14 @@ namespace u {
                         ret *= static_cast<T>((*this)[i]);
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return ret;
             }
 
             inline size_t rank() const {return size();}
 
             int next_axis(int begin, const Shape &shape, bool same=true) const {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 u_assert(this->rank() == shape.rank(), u::format("`this` and `shape` must have rank. given (%zu vs %zu)", this->rank(), shape.rank()));
                 int axis = -1;
                 if (same) {
@@ -261,7 +261,7 @@ namespace u {
                         }
                     }
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return axis;
             }
 
@@ -269,6 +269,10 @@ namespace u {
              ** sub shape without axis from `axis` to `axis + num`
             */
             Shape esub(int axis, size_t num=1) const {
+                u_fun_enter(2, 0);
+                if (num > 0) {
+                    -- num;
+                }
                 size_t len = size();
                 u_assert(len > 0, u::format("cannot get sub-shape for shape with size of %zu", len));
                 size_t beg_axis = axis_normalize(axis);
@@ -281,10 +285,12 @@ namespace u {
                         shape[++ idx] = (*this)[i];
                     }
                 }
+                u_fun_exit(0, -2);
                 return shape;
             }
 
             size_t offsetmap(const size_t num, int end=-1) const {
+                u_fun_enter(2, 0);
                 u_assert(num < volume(), u::format("num2offset num overflow (%zu vs %zu)", num, volume()));
                 size_t vol = 0;
                 size_t left = num;
@@ -296,10 +302,12 @@ namespace u {
                     left -= capacity;
                     vol +=  capacity;
                 }
+                u_fun_exit(0, -2);
                 return vol;
             }
 
             size_t offsetmap(const Shape &shape, const size_t num, int end=-1) const {
+                u_fun_enter(2, 0);
                 u_assert(num < volume(), u::format("num2offset num overflow (%zu vs %zu)", num, volume()));
                 u_assert(shape.rank() == size(), u::format("num2offset of `shape` should have rank equal `*this`. given (%zu vs %zu)", shape.rank(), this->rank()));
                 size_t vol = 0;
@@ -312,10 +320,12 @@ namespace u {
                     left -= (capacity * v);
                     vol += (shape.volume(i, end) * capacity);
                 }
+                u_fun_exit(0, -2);
                 return vol;
             }
 
             static Shape concatenate(const std::vector<Shape> &shapes, int axis) {
+                u_fun_enter(2, 0);
                 Shape shape(shapes[0]);
                 { // check shape compabitity
                     Shape subshape = shape.esub(axis);
@@ -325,16 +335,17 @@ namespace u {
                     }
                 }
                 size_t naxis = shape.axis_normalize(axis);
-                for (size_t i=1; i<shape.size(); ++i) {
+                for (size_t i=1; i<shapes.size(); ++i) {
                     shape[naxis] += shapes[i][naxis];
                 }
+                u_fun_exit(0, -2);
                 return shape;
             }
 
             static const Shape broadcast(const Shape &s1, const Shape &s2) {return s1.broadcast(s2);}
 
             Shape broadcast(const Shape &shape) const {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 Shape ret = shape;
                 if (shape != *this) {
                     Shape a(*this);
@@ -352,7 +363,7 @@ namespace u {
                         ret[i] = std::max(adim, bdim);
                     }
                 }
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 return ret;
             }
 
@@ -366,7 +377,7 @@ namespace u {
              **    whether shape can be broadcast to shape_
             */
             bool broadcastable(const Shape &shape, bool particial=false) const {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 bool ans = true;
                 if (shape != *this) {
                     Shape a(*this);
@@ -389,12 +400,12 @@ namespace u {
                         }
                     }
                 }
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 return ans;
             }
 
             static std::tuple<Shape, Shape, Shape> adapt_shape(const Shape &shape1, const Shape &shape2) {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 Shape ret = shape1;
                 Shape a(shape1);
                 Shape b(shape2);
@@ -412,34 +423,38 @@ namespace u {
                         ret[i] = std::max(adim, bdim);
                     }
                 }
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 return std::make_tuple(ret, a, b);
             }
 
-            inline size_t axis_normalize(const int axis) const {return axis_normalize(*this, axis);}
+            template<typename T=size_t>
+            inline T axis_normalize(const int axis) const {return axis_normalize<T>(*this, axis);}
 
-            inline std::vector<size_t> axis_normalize(const std::vector<int> &axis) const {return axis_normalize(*this, axis);}
+            template<typename T=size_t>
+            inline std::vector<T> axis_normalize(const std::vector<int> &axis) const {return axis_normalize<T>(*this, axis);}
 
-            static size_t axis_normalize(const Shape &shape, const int axis) {
+            template<typename T=size_t>
+            static T axis_normalize(const Shape &shape, const int axis) {
                 // normalize axis
                 // if axis is positive, do nothing
                 // else convert it to positive by adding rank
                 // this is like mod operation
-                u_fun_enter(0, 0);
-                size_t _axis_ = axis >= 0 ? axis : (shape.rank() + axis);
+                u_fun_enter(2, 0);
+                T _axis_ = axis >= 0 ? axis : (shape.rank() + axis);
                 u_assert(shape.rank() > _axis_,u::format("absolute value of axis should not be greater than shape dimensions (%zu vs %zu) <axis: %d>", shape.rank(), _axis_, axis));
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return (_axis_);
             }
 
             // transform list of relative axes to absolute axes
-            static std::vector<size_t> axis_normalize(const Shape &shape, const std::vector<int> &axis) {
-                u_fun_enter(0, 0);
-                std::vector<size_t> ret(axis.size());
+            template<typename T=size_t>
+            static std::vector<T> axis_normalize(const Shape &shape, const std::vector<int> &axis) {
+                u_fun_enter(2, 0);
+                std::vector<T> ret(axis.size());
                 for (size_t idx = 0; idx < axis.size(); ++idx) {
-                    ret[idx] = axis_normalize(shape, axis[idx]);
+                    ret[idx] = axis_normalize<T>(shape, axis[idx]);
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return (ret);
             }
 
@@ -447,30 +462,30 @@ namespace u {
 
             inline Shape get_shape_dimension(const int axis, bool keepdims=false) const {return prepare_shape_for_dimension_operation_(axis, keepdims);}
 
-            inline Shape transpose(const std::vector<int> &axis) {
-                u_fun_enter(0, 0);
+            inline Shape transpose(const std::vector<int> &axis) const {
+                u_fun_enter(2, 0);
                 std::vector<size_t> _axis_ = axis_normalize(axis);
                 //u_assert([&_axis_]()->bool{return std::unique(_axis_.begin(), _axis_.end()) == _axis_.end();}, u::format("axis duplicant"));
                 if (std::unique(_axis_.begin(), _axis_.end()) != _axis_.end()) {
                     bool AXIS_DUPLICANT_ERROR = false;
                     u_assert(AXIS_DUPLICANT_ERROR, "axis contains duplicant ones. pay attention to axis indicated by both pisitive and negative value");
                 }
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return Shape();
             }
 
             inline Shape& reshape(const Shape &shape) {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 u_assert(volume() == shape.volume(), u::format("cannot reshape to different volumes. given (%zu, %zu)", volume(), shape.volume()));
                 resize(shape.size());
                 assign(shape.begin(), shape.end());
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return *this;
             }
 
             template <typename T>
             inline Shape& reshape(const std::vector<T> &shape) {
-                u_fun_enter(0, 0);
+                u_fun_enter(2, 0);
                 DType type = ctype<T>();
                 if (type == DType::float32 || type == DType::float64){
                     bool NON_SUPPORT_DTYPE_FOR_RESHAPE = false;
@@ -500,7 +515,7 @@ namespace u {
                 }
                 Shape s(_shape_);
                 reshape(s);
-                u_fun_exit(0, 0);
+                u_fun_exit(0, -2);
                 return *this;
             }
         };
