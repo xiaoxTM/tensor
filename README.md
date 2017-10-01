@@ -31,6 +31,3 @@ add (function) --> u::op::Add (class) --> u::op::cpu::add (function) --> u::aop:
 - [ ] gpu `CUDA` implementation
 - [ ] indexing
 - [ ] assert ==> Exception
-
-## Problems: [DONE]
-double free or collapse on virtual ~Shape
