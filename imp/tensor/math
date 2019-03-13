@@ -1,0 +1,210 @@
+// clip in inplace mode
+void clip_inplace(double min, double max) {
+    u_fun_enter(2, 0);
+    op::run2<Tensor, op::Clip>(*this, *this, min, max);
+    u_fun_exit(0, -2);
+}
+
+Tensor clip(double min, double max) const {
+    u_fun_enter(2, 0);
+    Tensor ret(*this);
+    ret.clip_inplace(min, max);
+    u_fun_exit(0, -2);
+    return ret;
+}
+
+void abs_inplace() {
+    u_fun_enter(2, 0);
+    op::run2<Tensor, op::Absolute>(*this, *this);
+    u_fun_exit(0, -2);
+}
+
+Tensor abs() const {
+    u_fun_enter(2, 0);
+    Tensor ret(*this);
+    ret.abs();
+    u_fun_exit(0, -2);
+    return ret;
+}
+
+void exp_inplace() {
+    u_fun_enter(2, 0);
+    op::run2<Tensor, op::Experiential >(*this, *this);
+    u_fun_exit(0, -2);
+}
+
+Tensor exp() const {
+    u_fun_enter(2, 0);
+    Tensor ret(*this);
+    ret.exp();
+    u_fun_exit(0, -2);
+    return ret;
+}
+
+void log_inplace() {
+    u_fun_enter(2, 0);
+    op::run2<Tensor, op::Log >(*this, *this);
+    u_fun_exit(0, -2);
+}
+
+Tensor log() const {
+    u_fun_enter(2, 0);
+    Tensor ret(*this);
+    ret.log();
+    u_fun_exit(0, -2);
+    return ret;
+}
+
+void log10_inplace() {
+    u_fun_enter(2, 0);
+    op::run2<Tensor, op::Log10>(*this, *this);
+    u_fun_exit(0, -2);
+}
+
+Tensor log10() const {
+    u_fun_enter(2, 0);
+    Tensor ret(*this);
+    ret.log10();
+    u_fun_exit(0, -2);
+    return ret;
+}
+
+
+Tensor sqrt() const {
+    u_fun_enter(2, 0);
+    Tensor t(shape_, DType::float64);
+    op::run2<Tensor, op::SquareRoot>(t, *this);
+    u_fun_exit(0, -2);
+    return t;
+}
+
+Tensor sin() const {
+    u_fun_enter(2, 0);
+    Tensor t(shape_, DType::float64);
+    op::run2<Tensor, op::Sine>(t, *this);
+    u_fun_exit(0, -2);
+    return t;
+}
+
+Tensor cos() const {
+    u_fun_enter(2, 0);
+    Tensor t(shape_, DType::float64);
+    op::run2<Tensor, op::Cosine>(t, *this);
+    u_fun_exit(0, -2);
+    return t;
+}
+
+Tensor tan() const {
+    u_fun_enter(2, 0);
+    Tensor t(shape_, DType::float64);
+    op::run2<Tensor, op::Tangent>(t, *this);
+    u_fun_exit(0, -2);
+    return t;
+}
+
+Tensor tanh() const {
+    u_fun_enter(2, 0);
+    Tensor t(shape_, DType::float64);
+    op::run2<Tensor, op::HyperbolicTangent>(t, *this);
+    u_fun_exit(0, -2);
+    return t;
+}
+
+Tensor round() const {
+    u_fun_enter(2, 0);
+    Tensor t(shape_, type_);
+    op::run2<Tensor, op::Round>(t, *this);
+    u_fun_exit(0, -2);
+    return t;
+}
+
+Tensor ceil() const {
+    u_fun_enter(2, 0);
+    Tensor t(shape_, type_);
+    op::run2<Tensor, op::Ceil>(t, *this);
+    u_fun_exit(0, -2);
+    return t;
+}
+
+Tensor floor() const {
+    u_fun_enter(2, 0);
+    Tensor t(shape_, type_);
+    op::run2<Tensor, op::Floor>(t, *this);
+    u_fun_exit(0, -2);
+    return t;
+}
+
+Tensor isinf() const {
+    u_fun_enter(2, 0);
+    Tensor t(shape_, DType::uint8);
+    op::run2<Tensor, op::IsInfinite>(t, *this);
+    u_fun_exit(0, -2);
+    return t;
+}
+
+Tensor isnan() const {
+    u_fun_enter(2, 0);
+    Tensor t(shape_, DType::uint8);
+    op::run2<Tensor, op::IsNaN>(t, *this);
+    u_fun_exit(0, -2);
+    return t;
+}
+
+Tensor isfinite() const {
+    u_fun_enter(2, 0);
+    Tensor t(shape_, DType::uint8);
+    op::run2<Tensor, op::IsFinite>(t, *this);
+    u_fun_exit(0, -2);
+    return t;
+}
+
+inline Tensor sum(const int axis = u::tensor::all, const DType type = DType::float32, bool keepdims=false) const {
+    u_fun_here(0, 0);
+    return dimension_op_run_<op::Sum>(axis, type, keepdims);
+}
+
+inline Tensor mean(const int axis = u::tensor::all, const DType type = DType::float32, bool keepdims=false) const {
+    u_fun_here(0, 0);
+    return dimension_op_run_<op::Mean>(axis, type, keepdims);
+}
+
+inline Tensor stddev(const int axis = u::tensor::all, const DType type = DType::float32, bool keepdims=false) const {
+    u_fun_here(0, 0);
+    return dimension_op_run_<op::StdDev>(axis, type, keepdims);
+}
+
+inline Tensor max(const int axis = u::tensor::all, const DType type = DType::invalid, bool keepdims=false) const {
+    u_fun_here(0, 0);
+    return dimension_op_run_<op::Max>(axis, type, keepdims);
+}
+
+inline Tensor max(const Tensor &t) const {
+    u_fun_enter(2, 0);
+    Tensor ret(shape_.broadcast(t.shape()), std::max(type_, t.type()), false);
+    op::run3<Tensor, op::Maximum>(ret, *this, t);
+    u_fun_exit(0, -2);
+    return ret;
+}
+
+inline Tensor min(const int axis = u::tensor::all, const DType type = DType::invalid, bool keepdims=false) const {
+    u_fun_here(0, 0);
+    return dimension_op_run_<op::Min>(axis, type, keepdims);
+}
+
+inline Tensor min(const Tensor &t) const {
+    u_fun_enter(2, 0);
+    Tensor ret(shape_.broadcast(t.shape()), std::max(type_, t.type()), false);
+    op::run3<Tensor, op::Minimum>(ret, *this, t);
+    u_fun_exit(0, -2);
+    return ret;
+}
+
+inline Tensor argmax(const int axis = u::tensor::all, const DType type = DType::uint32, bool keepdims=false) const {
+    u_fun_here(0, 0);
+    return dimension_op_run_<op::ArgMax>(axis, type, keepdims);
+}
+
+inline Tensor argmin(const int axis = u::tensor::all, const DType type = DType::uint32, bool keepdims=false) const {
+    u_fun_here(0, 0);
+    return dimension_op_run_<op::ArgMin>(axis, type, keepdims);
+}

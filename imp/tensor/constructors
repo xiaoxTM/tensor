@@ -1,0 +1,156 @@
+
+virtual ~Tensor() {}
+
+Tensor(): data_(nullptr), shape_(), type_(DType::invalid), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {}
+
+Tensor(const DType type) : data_(nullptr), shape_(), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
+    u_fun_exit(0, -2);
+}
+
+Tensor(const Shape& shape, const DType type, bool lazy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
+    size_t v = volume();
+    u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
+    data_ = nullptr;
+    if (!lazy) {
+        malloc();
+    }
+    u_fun_exit(0, -2);
+}
+
+Tensor(const std::initializer_list<size_t> &shape, const DType type, bool lazy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
+    size_t v = volume();
+    u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
+    data_ = nullptr;
+    if (!lazy) {
+        malloc();
+    }
+    u_fun_exit(0, -2);
+}
+
+Tensor(unsigned char * data, const std::vector<size_t> &shape, const DType type, bool copy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
+    size_t v = volume();
+    u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
+    u_assert(data != nullptr, "data can not be null pointer");
+    if (copy) {
+        //size_t size_in_byte = bytesize();
+        _init<unsigned char>(data, bytesize());
+    } else {
+        // use void free to avoid freeing referred memory which should be freed by caller
+        data_.reset(data, mm::no_free);
+    }
+    u_fun_exit(0, -2);
+}
+
+Tensor(unsigned char * data, const Shape& shape, const DType type, bool copy = false) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
+    size_t v = volume();
+    u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
+    u_assert(data != nullptr, "data can not be null pointer");
+    if (copy) {
+        _init<unsigned char>(data, bytesize());
+    } else {
+        data_.reset(data, mm::no_free);
+    }
+    u_fun_exit(0, -2);
+}
+
+Tensor(const unsigned char * const data, const Shape &shape, const DType type) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
+    size_t v = volume();
+    u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
+    u_assert(data != nullptr, "data can not be null pointer");
+    _init<unsigned char>(data, bytesize());
+    u_fun_exit(0, -2);
+}
+
+Tensor(const unsigned char * const data, const std::vector<size_t> &shape, const DType type) : shape_(shape), type_(type), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    u_assert(type < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
+    size_t v = volume();
+    u_assert(v > 0, "no allowing copy tensor with 0 size.");
+    u_assert(data != nullptr, "data can not be null pointer");
+    _init<unsigned char>(data, bytesize());
+    u_fun_exit(0, -2);
+}
+
+// invoked in the following case
+// Tensor t1(t2);
+Tensor(const Tensor &t) : shape_(t.shape()), type_(t.type()), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    u_assert(type_ < DType::invalid, "no allowing explicitly constrcuting invalid type of tensor");
+    size_t v = volume();
+    u_assert(v > 0, u::format("size must be greater than 0. given %zu", v));
+    u_assert(t.cref() != nullptr, "data can not be null pointer");
+    _init<unsigned char>(t.cref(), bytesize());
+    u_fun_exit(0, -2);
+}
+
+Tensor(const char& data) : shape_(), type_(DType::int8), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    _init<char>(&data);
+    u_fun_exit(0, -2);
+}
+
+Tensor(const unsigned char& data) : shape_(), type_(DType::uint8), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    _init<unsigned char>(&data);
+    u_fun_exit(0, -2);
+}
+
+Tensor(const short& data) : shape_(), type_(DType::int16), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    _init<short>(&data);
+    u_fun_exit(0, -2);
+}
+
+Tensor(const unsigned short& data) : shape_(), type_(DType::uint16), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    _init<unsigned short>(&data);
+    u_fun_exit(0, -2);
+}
+
+Tensor(const int& data) : shape_(), type_(DType::int32), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    _init<int>(&data);
+    u_fun_exit(0, -2);
+}
+
+Tensor(const unsigned int& data) : shape_(), type_(DType::uint32), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    _init<unsigned int>(&data);
+    u_fun_exit(0, -2);
+}
+
+Tensor(const long& data) : shape_(), type_(DType::int64), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    _init<long>(&data);
+    u_fun_exit(0, -2);
+}
+
+Tensor(const size_t& data) : shape_(), type_(DType::uint64), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    _init<size_t>(&data);
+    u_fun_exit(0, -2);
+}
+
+Tensor(const float& data) : shape_(), type_(DType::float32), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    _init<float>(&data);
+    u_fun_exit(0, -2);
+}
+
+Tensor(const double& data) : shape_(), type_(DType::float64), print_precision_(std::numeric_limits<long double>::digits10 + 1), print_width_(10) {
+    u_fun_enter(2, 0);
+    _init<double>(&data);
+    u_fun_exit(0, -2);
+}
