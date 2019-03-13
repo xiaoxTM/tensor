@@ -1,0 +1,460 @@
+
+template<typename To, typename Ti>
+class Broadcast {
+public:
+    static void run(unsigned char *dst, const unsigned char * const src, const Shape &dshape, const Shape &sshape) {
+        cpu::broadcast<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename T>
+class Concatenate {
+public:
+    static void run(unsigned char *dst, const std::vector<const unsigned char *> &srcs, const Shape &shape, const std::vector<Shape> &shapes, int axis) {
+        cpu::concatenate<T>(dst, srcs, shape, shapes, axis);
+    }
+};
+
+template<typename T>
+class Split {
+public:
+    static void run(std::vector<unsigned char *> &dsts, const unsigned char * src, const Shape &shape, const std::vector<Shape> &shapes, size_t axis) {
+        cpu::split<T>(dsts, src, shapes, shape, axis);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class Equal {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::equal<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class NotEqual {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::nequal<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class Greater {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::greater<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class GreaterEqual {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::gequal<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class Less {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::less<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class LessEqual {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::lequal<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class Add {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::add<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class Subtract {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::subtract<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class Multiply {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::multiply<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class Divide {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::divide<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class Mod {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::mod<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class Pow {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::pow<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class Maximum {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::max<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+template<typename To, typename T1, typename T2>
+class Minimum {
+public:
+    static void run(unsigned char *dst, const unsigned char *src1, const unsigned char *src2, const Shape &dshape, const Shape &sshape1, const Shape &sshape2) {
+        cpu::min<To, T1, T2>(dst, src1, src2, dshape, sshape1, sshape2);
+    }
+};
+
+// natural logarithm
+template<typename To, typename Ti>
+class Log {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::log<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Log10 {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::log10<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class SquareRoot {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::sqrt<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Sine {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::sin<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Cosine {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::cos<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Tangent {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::tan<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class HyperbolicTangent {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::tanh<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Round {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::round<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Ceil {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::ceil<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Floor {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::floor<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class IsInfinite {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::isinf<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class IsNaN {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::isnan<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class IsFinite {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::isfinite<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Experiential  {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::exp<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Invert {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::invert<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Minus {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::minus<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Absolute {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        u_fun_enter(2, 0);
+        cpu::abs<To, Ti>(dst, src, dshape, sshape);
+        u_fun_exit(0, -2);
+    }
+};
+
+template<typename To, typename Ti>
+class Clip {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, double min, double max) {
+        u_fun_enter(2, 0);
+        cpu::clip<To, Ti>(dst, src, dshape, sshape, min, max);
+        u_fun_exit(0, -2);
+    }
+};
+
+template<typename To, typename Ti>
+class Assign {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape) {
+        cpu::assign<To, Ti>(dst, src, dshape, sshape);
+    }
+};
+
+template<typename To, typename Ti>
+class Sum {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
+        u_fun_enter(2, 0);
+        cpu::sum<To, Ti>(dst, src, dshape, sshape, axis);
+        u_fun_exit(0, -2);
+    }
+};
+
+template<typename To, typename Ti>
+class Mean {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
+        u_fun_enter(2, 0);
+        cpu::mean<To, Ti>(dst, src, dshape, sshape, axis);
+        u_fun_exit(0, -2);
+    }
+};
+
+template<typename To, typename Ti>
+class StdDev {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
+        u_fun_enter(2, 0);
+        cpu::stddev<To, Ti>(dst, src, dshape, sshape, axis);
+        u_fun_exit(0, -2);
+    }
+};
+
+template<typename To, typename Ti>
+class Max {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
+        u_fun_enter(2, 0);
+        cpu::max<To, Ti>(dst, src, dshape, sshape, axis);
+        u_fun_exit(0, -2);
+    }
+};
+
+template<typename To, typename Ti>
+class Min {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
+        u_fun_enter(2, 0);
+        cpu::min<To, Ti>(dst, src, dshape, sshape, axis);
+        u_fun_exit(0, -2);
+    }
+};
+
+template<typename To, typename Ti>
+class ArgMax {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
+        u_fun_enter(2, 0);
+        cpu::argmax<To, Ti>(dst, src, dshape, sshape, axis);
+        u_fun_exit(0, -2);
+    }
+};
+
+template<typename To, typename Ti>
+class ArgMin {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, int axis) {
+        u_fun_enter(2, 0);
+        cpu::argmin<To, Ti>(dst, src, dshape, sshape, axis);
+        u_fun_exit(0, -2);
+    }
+};
+
+template<typename To, typename Ti>
+class Transpose {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, const std::vector<size_t> &dims, const std::map<size_t, size_t> &dim_map) {
+        u_fun_enter(2, 0);
+        u_assert(dst != nullptr && src != nullptr,"both dst and src must not be null pointer");
+        u_assert(dst != src, "transpose cannot be called with in-place mode");
+        u_assert(dim_map.size() == dshape.size(),u::format("transpose changes size not match (%zu, vs %zu)",dim_map.size(), dshape.size()));
+        u_assert(dshape.rank() == sshape.rank() && dshape.rank() > 0,u::format("dimensions not match (%zu vs %zu)", dshape.rank(),dshape.rank()));
+        const Ti * const src_ = reinterpret_cast<const Ti * const >(src);
+        To * const dst_ = reinterpret_cast<To * const >(dst);
+        std::vector<double> dprod(dshape.rank(), 1);
+        std::vector<double> diprod(dshape.rank(), 1);
+        for (int i = static_cast<int>(dshape.rank()) - 2; i >= 0; --i) {
+            diprod[i] = diprod[i + 1] * dshape[i + 1];
+            dprod[i] = dprod[i + 1] * sshape[i + 1];
+        }
+        #ifdef _OPENMP
+        #pragma omp parallel for
+        #endif
+        for (size_t index = 0; index < static_cast<size_t>(dprod[0] * sshape[0]); ++index) {
+            size_t idx = index;
+            size_t nidx = 0;
+            for (size_t dim = 0; dim < dprod.size(); ++dim) {
+                size_t i = static_cast<size_t>(idx / dprod[dim]);
+                nidx += i * diprod[dim_map.at(static_cast<unsigned int>(dim))];
+                idx = idx % static_cast<size_t>(dprod[dim]);
+            }
+            dst_[nidx] = src_[index];
+        }
+        u_fun_exit(0, -2);
+    }
+};
+
+template<typename To, typename Ti>
+class Any {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, bool positive) {
+        u_fun_enter(2, 0);
+        u_assert(dst != nullptr && src != nullptr,"both dst and src must not be null pointer");
+        u_assert(dst != src, "any cannot be called with in-place mode");
+        u_assert(dshape.volume() == 1, u::format("destination of tensor of `Any` operation must have volume of 1 (scalar). given %zu", dshape.volume()));
+        const Ti * const src_ = reinterpret_cast<const Ti * const >(src);
+        To * const dst_ = reinterpret_cast<To * const >(dst);
+        size_t svolume = sshape.volume();
+        (*dst_) = static_cast<unsigned char>(!positive);
+        if (positive) {
+            for (size_t i=0; i<svolume; ++i) {
+                if (src_[i]) {
+                    (*dst_) = 1;
+                    break;
+                }
+            }
+        } else {
+            for (size_t i=0; i<svolume; ++i) {
+                if (! src_[i]) {
+                    (*dst_) = 1;
+                    break;
+                }
+            }
+        }
+        u_fun_exit(0, -2);
+    }
+};
+
+template<typename To, typename Ti>
+class All {
+public:
+    static void run(unsigned char *dst, const unsigned char *src, const Shape &dshape, const Shape &sshape, bool positive) {
+        u_fun_enter(2, 0);
+        u_fun_enter(2, 0);
+        u_assert(dst != nullptr && src != nullptr,"both dst and src must not be null pointer");
+        u_assert(dst != src, "any cannot be called with in-place mode");
+        u_assert(dshape.volume() == 1, u::format("destination of tensor of `All` operation must have volume of 1 (scalar). given %zu", dshape.volume()));
+        const Ti * const src_ = reinterpret_cast<const Ti * const >(src);
+        To * const dst_ = reinterpret_cast<To * const >(dst);
+        size_t svolume = sshape.volume();
+        (*dst_) = static_cast<unsigned char>(positive);
+        if (positive) {
+            for (size_t i=0; i<svolume; ++i) {
+                if (!src_[i]) {
+                    (*dst_) = 0;
+                    break;
+                }
+            }
+        } else {
+            for (size_t i=0; i<svolume; ++i) {
+                if (src_[i]) {
+                    (*dst_) = 0;
+                    break;
+                }
+            }
+        }
+        u_fun_exit(0, -2);
+    }
+};
