@@ -308,7 +308,7 @@ namespace u {
 
             size_t offsetmap(const Shape &shape, const size_t num, int end=-1) const {
                 u_fun_enter(2, 0);
-                u_assert(num < volume(), u::format("num2offset num overflow (%zu vs %zu)", num, volume()));
+                u_assert(num < shape.volume(), u::format("num2offset num overflow (%zu vs %zu)", num, shpape.volume()));
                 u_assert(shape.rank() == size(), u::format("num2offset of `shape` should have rank equal `*this`. given (%zu vs %zu)", shape.rank(), this->rank()));
                 size_t vol = 0;
                 size_t left = num;
